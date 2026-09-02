@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Admin Login — Akimark</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #080808;
+            --bg-surface: #151515;
+            --bg-secondary: #1C1C1C;
+            --accent: #c71515;
+            --accent-soft: #a00f0f;
+            --white: #FFFFFF;
+            --text-muted: #A7A7A7;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 20px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background: linear-gradient(180deg, #0a0a0a 0%, #080808 100%);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; }
+        input { font-family: inherit; border: none; outline: none; background: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* Header */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8, 8, 8, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 12px 0;
+        }
+        .header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo img { height: 40px; width: auto; object-fit: contain; }
+        .desktop-nav { display: none; align-items: center; gap: 28px; }
+        .desktop-nav a { font-size: 0.95rem; font-weight: 500; color: var(--text-muted); transition: color var(--transition); }
+        .desktop-nav a:hover, .desktop-nav a.active { color: var(--white); }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--bg-secondary); color: var(--white); font-weight: 700; font-size: 0.85rem;
+            padding: 6px 16px; border-radius: 8px; transition: background var(--transition), transform var(--transition);
+            border: 1px solid var(--border-subtle); text-decoration: none;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); transform: scale(1.02); }
+
+        /* Auth Section */
+        .auth-section { max-width: 560px; margin: 40px auto; padding: 0 20px; }
+        .auth-heading { text-align: center; margin-bottom: 32px; }
+        .auth-heading h2 { font-size: 2rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .auth-heading p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-group {
+            position: relative; display: flex; align-items: center;
+            background: var(--bg-secondary); border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-sm); padding: 10px 14px;
+            transition: border var(--transition), background var(--transition);
+        }
+        .input-group:focus-within { border-color: var(--accent); background: rgba(28, 28, 28, 0.9); }
+        .input-group > svg { color: var(--text-muted); width: 20px; height: 20px; margin-right: 10px; flex-shrink: 0; fill: currentColor; }
+        .input-group input { flex: 1; background: transparent; color: var(--white); font-size: 0.95rem; min-width: 0; }
+        .input-group input::placeholder { color: var(--text-muted); font-size: 0.85rem; }
+
+        .password-toggle { color: var(--text-muted); width: 24px; height: 24px; cursor: pointer; padding: 0; transition: color var(--transition); fill: currentColor; }
+        .password-toggle:hover { color: var(--white); }
+
+        /* Button */
+        .submit-btn {
+            width: 100%; padding: 12px; font-size: 0.95rem; margin-top: 8px;
+            background: var(--accent); color: #fff; font-weight: 700;
+            letter-spacing: 0.5px; text-transform: uppercase;
+            border-radius: 8px; transition: background var(--transition), transform var(--transition);
+            border: none; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .submit-btn:hover { background: var(--accent-soft); transform: scale(1.02); }
+        .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        /* Spinner */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        .submit-btn.processing .spinner { display: block; }
+        .submit-btn.processing { background: #8b0000; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .form-footer { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+        .form-footer a { color: var(--accent); font-weight: 600; margin-left: 4px; }
+        .error-message { display: none; text-align: center; padding: 16px; background: rgba(255, 0, 0, 0.1); border-radius: var(--radius-sm); border: 1px solid rgba(255, 0, 0, 0.3); margin-top: 16px; color: #ffcccc; font-size: 0.9rem; }
+
+        @media (min-width: 900px) {
+            .desktop-nav { display: flex; }
+            .header .container { padding: 0 32px; }
+            .auth-section { margin-top: 60px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="../images/logo-akimark.png" onerror="this.onerror=null; this.src='../images/logo-akimark.jpg';" alt="Akimark Logo">
+            </div>
+            <nav class="desktop-nav">
+                <a href="../index.html">Home</a>
+                <a href="../index.html#movies">Movies</a>
+                <a href="../index.html#series">Series</a>
+                <a href="../index.html#categories">Categories</a>
+            </nav>
+            <div class="header-actions">
+                <a href="admin-login.html" class="btn-secondary">Admin Login</a>
+                <a href="admin-register.html" class="btn-secondary">Admin Register</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Login Form -->
+    <div class="auth-section">
+        <div class="auth-heading">
+            <h2>Admin Login</h2>
+            <p>Access the Akimark admin panel</p>
+        </div>
+
+        <form id="adminLoginForm" autocomplete="off">
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <div class="input-group">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <input type="email" id="email" placeholder="Enter admin email" required>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <div class="input-group">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    <input type="password" id="password" placeholder="Enter admin password" required>
+                    <span class="password-toggle" id="togglePassword">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">Login</span>
+            </button>
+        </form>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="form-footer">
+            Don't have an admin account? <a href="admin-register.html">Register</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../javascript.js/supabase.js"></script>
+    <script src="admin-login.js"></script>
+</body>
+</html>
