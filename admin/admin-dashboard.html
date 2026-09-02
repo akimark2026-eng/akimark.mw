@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Admin Dashboard — Akimark</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #0B0F19;
+            --bg-surface: #111827;
+            --bg-input: #1F2937;
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border-color: #1F2937;
+            --accent-primary: #E11D48;
+            --accent-hover: #BE123C;
+            --green-success: #22C55E;
+            --red-danger: #FF4D6D;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-size: 0.85rem;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Skeleton */
+        .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-input);
+            border-radius: var(--radius-md);
+        }
+        .skeleton::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .sk-text { height: 14px; width: 60%; margin-bottom: 8px; }
+        .sk-title { height: 20px; width: 40%; margin-bottom: 12px; }
+        .sk-box { height: 80px; width: 100%; margin-bottom: 12px; }
+
+        /* Header */
+        .admin-header {
+            background: #000;
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hamburger-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+        }
+        .hamburger-btn:hover { background: rgba(255,255,255,0.1); }
+        .admin-logo img { height: 28px; width: auto; border-radius: 6px; }
+        .admin-name { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
+        .header-logout-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        .header-logout-btn:hover { color: var(--red-danger); }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1001; display: none;
+        }
+        .sidebar-overlay.visible { display: block; }
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100%; width: var(--sidebar-width);
+            background: #000; border-right: 1px solid var(--border-color);
+            z-index: 1002; transform: translateX(-100%);
+            transition: transform 0.3s ease; padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open { transform: translateX(0); }
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-header span { font-weight: 700; font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); }
+        .close-btn { background: none; border: none; color: var(--text-muted); font-size: 0.9rem; cursor: pointer; }
+        .sidebar-links { list-style: none; padding: 0; margin: 0; flex: 1; }
+        .sidebar-links li { margin-bottom: 4px; }
+        .sidebar-links a {
+            display: flex; align-items: center; gap: 8px; color: var(--text-muted);
+            text-decoration: none; padding: 8px 10px; border-radius: var(--radius-md);
+            font-size: 0.75rem; font-weight: 500;
+        }
+        .sidebar-links a:hover { background: var(--bg-input); color: var(--text-main); }
+        .sidebar-links a.active { background: rgba(225,29,72,0.1); color: var(--accent-primary); }
+        
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        .logout-btn {
+            display: flex; align-items: center; gap: 8px;
+            color: var(--text-muted); text-decoration: none; padding: 8px 10px;
+            border-radius: var(--radius-md); font-size: 0.75rem; font-weight: 500;
+            cursor: pointer; background: transparent; border: none; width: 100%; text-align: left;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.05); color: var(--red-danger); }
+        .powered-by {
+            font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: 10px;
+        }
+
+        /* Main Content */
+        .main-content { max-width: 800px; margin: 10px auto; padding: 0 12px; }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: var(--bg-surface); border-radius: var(--radius-lg);
+            padding: 16px; margin-bottom: 10px; border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .welcome-avatar {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--bg-input); display: flex; align-items: center; justify-content: center;
+        }
+        .welcome-avatar i { font-size: 1.2rem; color: var(--accent-primary); }
+        .welcome-text h1 { font-size: 1rem; font-weight: 700; margin: 0; }
+        .welcome-text p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
+
+        /* Wallet Card (Compact) */
+        .wallet-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .balance-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .balance-info { flex: 1; }
+        .balance-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .balance-amount { font-size: 1.6rem; font-weight: 800; color: var(--green-success); }
+        .withdraw-btn {
+            padding: 8px 16px; background: var(--accent-primary); color: #fff;
+            border: none; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            white-space: nowrap;
+        }
+        .withdraw-btn:hover { background: var(--accent-hover); }
+
+        /* Stats Grid (2x2) - No Subtitles */
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+        .stat-box {
+            background: var(--bg-surface); border-radius: var(--radius-lg);
+            padding: 16px; border: 1px solid var(--border-color);
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .stat-box-header { display: flex; align-items: center; justify-content: space-between; }
+        .stat-box-header .label {
+            font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;
+        }
+        .stat-box-header i { font-size: 0.9rem; color: var(--text-muted); }
+        .stat-box-value { font-size: 1.3rem; font-weight: 800; }
+        .stat-box-value.currency { color: var(--accent-primary); }
+        .stat-box-value.green { color: var(--green-success); }
+        .stat-box-value.grey { color: var(--text-muted); }
+
+        /* Bar Graph Section */
+        .chart-section {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+        .chart-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 100px;
+        }
+        .chart-bar {
+            flex: 1;
+            background: var(--accent-primary);
+            border-radius: 4px 4px 0 0;
+            min-height: 2px;
+            position: relative;
+        }
+        .chart-bar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* My Films Section (Hidden by default) */
+        .myfilms-section {
+            display: none;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+        .myfilms-section.visible { display: block; }
+        .myfilms-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .myfilms-header h3 { font-size: 0.9rem; font-weight: 700; margin: 0; }
+        .myfilms-header .close-tab {
+            background: transparent; border: none; color: var(--text-muted);
+            font-size: 1.1rem; cursor: pointer;
+        }
+
+        .films-table { width: 100%; border-collapse: collapse; }
+        .films-table th, .films-table td { padding: 8px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; }
+        .films-table th { color: var(--text-muted); font-weight: 600; }
+        .action-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; margin-right: 8px; }
+        .action-btn.edit:hover { color: #3B82F6; }
+        .action-btn.delete:hover { color: var(--red-danger); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 9999; display: none;
+            align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-overlay.visible { display: flex; }
+        .edit-modal {
+            background: var(--bg-surface); border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg); padding: 16px; width: 100%; max-width: 400px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5); position: relative;
+        }
+        .edit-modal h3 { font-size: 0.85rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .edit-modal .close-modal {
+            position: absolute; top: 8px; right: 8px; background: none; border: none;
+            color: var(--text-muted); font-size: 1.1rem; cursor: pointer;
+        }
+        .edit-modal .form-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; }
+        .edit-modal .form-control {
+            background: var(--bg-input); border: 1px solid transparent; border-radius: var(--radius-md);
+            color: var(--text-main); padding: 8px 10px; font-size: 0.8rem; margin-bottom: 10px;
+        }
+        .edit-modal .form-control:focus {
+            border-color: var(--accent-primary); box-shadow: 0 0 0 4px rgba(225,29,72,0.2); outline: none;
+        }
+        .edit-modal .btn-save {
+            width: 100%; padding: 10px; background: var(--accent-primary); color: #fff;
+            border: none; border-radius: var(--radius-md); font-size: 0.8rem; font-weight: 600; cursor: pointer;
+        }
+        .edit-modal .btn-save:hover { background: var(--accent-hover); }
+        .edit-modal .btn-cancel {
+            width: 100%; padding: 8px; background: var(--bg-input); color: var(--text-muted);
+            border: none; border-radius: var(--radius-md); font-size: 0.75rem; margin-top: 6px; cursor: pointer;
+        }
+
+        /* Powered By Footer */
+        .powered-by-footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 12px 0;
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .powered-by-footer i { font-size: 1rem; margin-right: 4px; }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .films-table { display: block; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <button class="hamburger-btn" id="hamburgerBtn"><i class="bi bi-list"></i></button>
+            <div class="admin-logo">
+                <img src="../images/logo-akimark.png" onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" alt="Akimark">
+                <span id="logoText" style="display:none; font-weight:800; font-size:0.85rem;">Aki<span style="color:var(--accent-primary)">MARK</span></span>
+            </div>
+        </div>
+        <div class="admin-header-right" style="display:flex; align-items:center;">
+            <span id="adminNameBadge" class="admin-name">Hi, Admin</span>
+            <button class="header-logout-btn" id="headerLogoutBtn" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>Menu</span>
+            <button class="close-btn" id="closeSidebar"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <ul class="sidebar-links">
+            <li><a href="admin-dashboard.html" class="active" id="dashboardLink"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+            <li><a href="admin-manage.html"><i class="bi bi-cloud-arrow-up-fill"></i> Upload Film</a></li>
+            <li><a href="#" id="sidebarMyFilmsBtn"><i class="bi bi-film"></i> My Films <span class="badge bg-danger" id="sidebarFilmsCount">0</span></a></li>
+            <li><a href="admin-account.html"><i class="bi bi-gear-fill"></i> Settings</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <button class="logout-btn" id="sidebarLogoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</button>
+            <div class="powered-by">Powered by <strong>Mo Kondowe</strong></div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Skeleton Loader (visible initially) -->
+        <div id="skeleton">
+            <div class="welcome-card skeleton" style="height:80px;"></div>
+            <div class="wallet-card skeleton" style="height:60px;"></div>
+            <div class="stats-grid">
+                <div class="stat-box skeleton" style="height:90px;"></div>
+                <div class="stat-box skeleton" style="height:90px;"></div>
+                <div class="stat-box skeleton" style="height:90px;"></div>
+                <div class="stat-box skeleton" style="height:90px;"></div>
+            </div>
+            <div class="chart-section skeleton" style="height:150px;"></div>
+        </div>
+
+        <!-- Real Content (hidden initially) -->
+        <div id="realContent" style="display:none;">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <div class="welcome-avatar"><i class="bi bi-person-fill"></i></div>
+                <div class="welcome-text">
+                    <h1>Welcome back, <span id="adminNameWelcome">Admin</span></h1>
+                    <p>Ready to manage your films?</p>
+                </div>
+            </div>
+
+            <!-- Wallet Card (Compact) -->
+            <div class="wallet-card">
+                <div class="balance-row">
+                    <div class="balance-info">
+                        <div class="balance-label">Available Balance</div>
+                        <div class="balance-amount" id="availableBalance">MWK 0.00</div>
+                    </div>
+                    <button class="withdraw-btn" id="withdrawBtn"><i class="bi bi-cash-stack"></i> Withdraw</button>
+                </div>
+            </div>
+
+            <!-- Stats Grid (2x2) - No Subtitles -->
+            <div class="stats-grid">
+                <!-- Total Earnings -->
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="label"><i class="bi bi-cash-coin me-1"></i>Total Earnings</span>
+                    </div>
+                    <div class="stat-box-value currency" id="totalEarnings">MWK 0.00</div>
+                </div>
+                <!-- Queue -->
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="label"><i class="bi bi-hourglass-split me-1"></i>Queue</span>
+                    </div>
+                    <div class="stat-box-value grey" id="queuedEarnings">MWK 0.00</div>
+                </div>
+                <!-- Revenue Fee (30%) -->
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="label"><i class="bi bi-percent me-1"></i>Revenue Fee</span>
+                    </div>
+                    <div class="stat-box-value" id="revenueFee">30%</div>
+                </div>
+                <!-- Net Followers -->
+                <div class="stat-box">
+                    <div class="stat-box-header">
+                        <span class="label"><i class="bi bi-people me-1"></i>Net Followers</span>
+                    </div>
+                    <div class="stat-box-value green" id="netFollowers">0</div>
+                </div>
+            </div>
+
+            <!-- Bar Graph Section -->
+            <div class="chart-section">
+                <div class="chart-title"><i class="bi bi-bar-chart-fill"></i> Earnings Overview</div>
+                <div class="chart-bars" id="earningsChart"></div>
+            </div>
+        </div>
+
+        <!-- My Films Section (Hidden by default) -->
+        <div class="myfilms-section" id="myfilmsSection">
+            <div class="myfilms-header">
+                <h3><i class="bi bi-film me-2"></i>My Films & Earnings</h3>
+                <button class="close-tab" id="closeMyFilmsTab" title="Close"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <table class="films-table" id="filmsTable">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Episode</th>
+                        <th>Price</th>
+                        <th>Earnings</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="filmsTableBody"></tbody>
+            </table>
+            <div id="noFilms" style="display:none; text-align:center; color:var(--text-muted); padding:16px;">No films uploaded yet.</div>
+        </div>
+    </div>
+
+    <!-- Powered By Footer -->
+    <div class="powered-by-footer">
+        <i class="bi bi-lock-fill"></i> Powered by <strong>Mo Kondowe</strong>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-overlay" id="editModalOverlay">
+        <div class="edit-modal">
+            <button class="close-modal" id="closeEditModal"><i class="bi bi-x-lg"></i></button>
+            <h3><i class="bi bi-pencil-square"></i> Edit Film</h3>
+            <form id="editFilmForm">
+                <input type="hidden" id="editFilmId">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" id="editTitle" required>
+                <label class="form-label">Genre</label>
+                <input type="text" class="form-control" id="editGenre" required>
+                <label class="form-label">Year</label>
+                <input type="number" class="form-control" id="editYear" required>
+                <label class="form-label">Price (MWK)</label>
+                <input type="number" class="form-control" id="editPrice" required>
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="editCategory" required>
+                <label class="form-label">Description</label>
+                <textarea class="form-control" id="editDescription" rows="2"></textarea>
+                <button type="submit" class="btn-save">Save Changes</button>
+                <button type="button" class="btn-cancel" id="cancelEditModal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../javascript.js/supabase.js"></script>
+    <script src="admin-dashboard.js"></script>
+    
+    <!-- UI Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            document.getElementById('hamburgerBtn').addEventListener('click', function() {
+                sidebar.classList.add('open');
+                overlay.classList.add('visible');
+            });
+            document.getElementById('closeSidebar').addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+            });
+            overlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+            });
+            
+            document.getElementById('withdrawBtn').addEventListener('click', function() {
+                alert('Withdrawal request sent! This will be processed within 24 hours.');
+            });
+
+            var myfilmsSection = document.getElementById('myfilmsSection');
+            var realContent = document.getElementById('realContent');
+
+            document.getElementById('sidebarMyFilmsBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                sidebar.classList.remove('open');
+                overlay.classList.remove('visible');
+                realContent.style.display = 'none';
+                myfilmsSection.classList.add('visible');
+                window.location.hash = 'myfilms';
+            });
+
+            document.getElementById('closeMyFilmsTab').addEventListener('click', function() {
+                myfilmsSection.classList.remove('visible');
+                realContent.style.display = 'block';
+                window.location.hash = '';
+            });
+
+            document.getElementById('dashboardLink').addEventListener('click', function() {
+                realContent.style.display = 'block';
+                myfilmsSection.classList.remove('visible');
+                window.location.hash = '';
+            });
+
+            if (window.location.hash === '#myfilms') {
+                myfilmsSection.classList.add('visible');
+                realContent.style.display = 'none';
+            }
+
+            function handleLogout() {
+                localStorage.removeItem('akmark_admin_token');
+                localStorage.removeItem('akmark_admin');
+                window.location.href = 'admin-login.html';
+            }
+            document.getElementById('headerLogoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('sidebarLogoutBtn').addEventListener('click', handleLogout);
+        });
+    </script>
+</body>
+</html>

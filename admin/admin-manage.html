@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Manage Films — Akimark Admin Pro</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #0B0F19;
+            --bg-surface: #111827;
+            --bg-input: #1F2937;
+            --bg-input-hover: #374151;
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border-color: #1F2937;
+            --border-focus: #374151;
+            --accent-primary: #E11D48;
+            --accent-hover: #BE123C;
+            --accent-glow: rgba(225, 29, 72, 0.2);
+            --radius-md: 6px;
+            --radius-lg: 10px;
+            --sidebar-width: 250px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            font-size: 0.85rem;
+        }
+
+        /* Header */
+        .admin-header {
+            background: #000;
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .admin-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .hamburger-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .hamburger-btn:hover {
+            color: var(--text-main);
+            background: rgba(255,255,255,0.1);
+        }
+        .admin-logo img {
+            height: 30px;
+            width: auto;
+            border-radius: 4px;
+        }
+        .admin-logo-text {
+            display: none;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .admin-name {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1001;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-overlay.visible {
+            display: block;
+            opacity: 1;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: var(--sidebar-width);
+            background: #000;
+            border-right: 1px solid var(--border-color);
+            z-index: 1002;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-header span {
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-btn:hover {
+            color: var(--text-main);
+        }
+        .sidebar-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar-links li {
+            margin-bottom: 4px;
+        }
+        .sidebar-links a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+        }
+        .sidebar-links a:hover {
+            background: var(--bg-input);
+            color: var(--text-main);
+        }
+        .sidebar-links a.active {
+            background: rgba(225, 29, 72, 0.1);
+            color: var(--accent-primary);
+            position: relative;
+        }
+        .sidebar-links a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background: var(--accent-primary);
+            border-radius: 0 4px 4px 0;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        .upload-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        }
+        .upload-card h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .upload-card h2 i {
+            color: var(--accent-primary);
+            background: rgba(225, 29, 72, 0.1);
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 6px;
+        }
+        .form-control, .form-select {
+            background: var(--bg-input);
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+            box-shadow: none !important;
+        }
+        .form-select option {
+            background: var(--bg-surface);
+            color: var(--text-main);
+        }
+        .form-control:hover, .form-select:hover {
+            background: var(--bg-input-hover);
+        }
+        .form-control:focus, .form-select:focus {
+            background: var(--bg-surface);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 4px var(--accent-glow) !important;
+            color: var(--text-main);
+        }
+        .form-control::placeholder {
+            color: #6B7280;
+            font-size: 0.8rem;
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 70px;
+            font-size: 0.85rem;
+        }
+
+        /* File Drop */
+        .file-drop {
+            border: 1.5px dashed var(--border-focus);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            background: var(--bg-input);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .file-drop:hover, .file-drop.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(225, 29, 72, 0.05);
+        }
+        .file-drop i {
+            font-size: 1.6rem;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+        }
+        .file-drop:hover i, .file-drop.dragover i {
+            color: var(--accent-primary);
+            transform: scale(1.1);
+        }
+        .file-drop p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .preview {
+            margin-top: 10px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .preview img {
+            max-width: 150px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Buttons */
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-primary);
+            border: none;
+            border-radius: var(--radius-md);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
+        }
+        .btn-submit:hover:not(:disabled) {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3);
+        }
+        .btn-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Progress */
+        .progress-wrap {
+            margin-top: 20px;
+            display: none;
+            background: var(--bg-input);
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+        .progress-wrap.visible {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        .progress-bar-bg {
+            height: 6px;
+            background: var(--bg-surface);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-primary), #FF4D6D);
+            border-radius: 4px;
+            transition: width 0.4s ease-out;
+            position: relative;
+        }
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 1.5s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Skeleton Loading for Queue Items */
+        .queue-item .progress-bar-custom {
+            background: #333;
+            position: relative;
+            overflow: hidden;
+        }
+        .queue-item .progress-bar-custom.skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 1.2s infinite linear;
+        }
+
+        /* Custom Confirm Modal */
+        .modal-backdrop.custom-backdrop {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1050;
+            display: none;
+        }
+        .modal-backdrop.custom-backdrop.show {
+            display: block;
+        }
+        .custom-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1055;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .custom-modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .custom-modal h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .custom-modal p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+        .custom-modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Guide TAB */
+        .guide-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+        }
+        .guide-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+        .guide-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            width: 90%;
+            max-width: 360px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .guide-modal.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .guide-modal h3 {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .guide-modal ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+        .guide-modal li {
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .guide-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+        }
+        .custom-toast {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            animation: slideInRight 0.4s ease;
+        }
+        .custom-toast.success {
+            border-left: 4px solid #4caf50;
+        }
+        .custom-toast.error {
+            border-left: 4px solid #dc3545;
+        }
+        .custom-toast .toast-icon {
+            font-size: 1.4rem;
+        }
+        .custom-toast.success .toast-icon {
+            color: #4caf50;
+        }
+        .custom-toast.error .toast-icon {
+            color: #dc3545;
+        }
+        .custom-toast .toast-content {
+            flex: 1;
+        }
+        .custom-toast .toast-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .custom-toast .toast-msg {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Film Loading Indicator */
+        .film-loading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+        .film-loading .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            border-width: 2px;
+        }
+        .film-loading .tick {
+            animation: tickAnim 0.8s ease-in-out infinite alternate;
+        }
+        @keyframes tickAnim {
+            from { transform: scale(0.8); opacity: 0.5; }
+            to { transform: scale(1.2); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content { margin: 16px auto; padding: 0 12px; }
+            .upload-card { padding: 16px; border-radius: var(--radius-md); }
+            .toast-container { top: 10px; right: 10px; max-width: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="admin-header-left">
+            <button class="hamburger-btn" id="hamburgerBtn"><i class="bi bi-list"></i></button>
+            <div class="admin-logo">
+                <img src="../images/logo-akimark.png" onerror="this.style.display='none'; document.getElementById('logoText').style.display='block';" alt="Akimark">
+                <span id="logoText" class="admin-logo-text" style="display:none;">Aki<span style="color:var(--accent-primary)">MARK</span></span>
+            </div>
+        </div>
+        <span id="adminNameBadge" class="admin-name">Hi, Admin</span>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span>Main Menu</span>
+            <button class="close-btn" id="closeSidebar"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <ul class="sidebar-links">
+            <li><a href="admin-dashboard.html"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+            <li><a href="admin-manage.html" class="active"><i class="bi bi-cloud-arrow-up-fill"></i> Upload Film</a></li>
+            <li><a href="admin-account.html"><i class="bi bi-gear-fill"></i> Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="upload-card">
+            <h2><i class="bi bi-film"></i> Batch Upload & Manage Film</h2>
+            <form id="uploadFilmForm">
+                <!-- Operation Selection -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="operation">Upload Operation</label>
+                        <select class="form-select" id="operation">
+                            <option value="new">Create New Film</option>
+                            <option value="continue">Update / Continue Film</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6" id="filmListContainer" style="display:none;">
+                        <label class="form-label" for="existingFilmSearch">Search Existing Film</label>
+                        <input type="text" class="form-control mb-2" id="existingFilmSearch" placeholder="Type to search...">
+                        <div id="filmLoadingIndicator" class="film-loading" style="display:none;">
+                            <span class="spinner-border spinner-border-sm text-warning"></span>
+                            <span><i class="bi bi-check-circle-fill tick text-success"></i> Loading films...</span>
+                        </div>
+                        <select class="form-select" id="existingFilm"></select>
+                    </div>
+                </div>
+
+                <!-- Film Details -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label" for="filmTitle">Film Title *</label>
+                        <input type="text" class="form-control" id="filmTitle" placeholder="Enter movie title..." required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="filmGenre">Genres (Select Multiple)</label>
+                        <select class="form-select" id="filmGenre" multiple>
+                            <option value="Action">Action</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Sci-fi">Sci-fi</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Romance">Romance</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label" for="filmCategory">Categories (Select Multiple)</label>
+                        <select class="form-select" id="filmCategory" multiple>
+                            <option value="Series">Series</option>
+                            <option value="Indian">Indian</option>
+                            <option value="Actions">Actions</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="China">China</option>
+                            <option value="Turkish">Turkish</option>
+                            <option value="Korea">Korea</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Local">Local</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="filmYear">Release Year *</label>
+                        <input type="number" class="form-control" id="filmYear" min="1900" max="2100" placeholder="YYYY" required>
+                    </div>
+                    <!-- Episode Range -->
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="episodeRange">Episode Range (e.g. 1-10)</label>
+                        <input type="text" class="form-control" id="episodeRange" placeholder="1-10">
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-12 col-md-3">
+                        <label class="form-label" for="filmPrice">Price (MWK) *</label>
+                        <input type="number" class="form-control" id="filmPrice" min="0" step="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-check form-switch mt-3">
+                        <input class="form-check-input" type="checkbox" id="latestCheck" checked>
+                        <label class="form-check-label" for="latestCheck">Set as Latest</label>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="filmDescription">Synopsis / Description</label>
+                        <textarea class="form-control" id="filmDescription" rows="2" maxlength="500"></textarea>
+                    </div>
+
+                    <!-- Poster Upload -->
+                    <div class="col-12">
+                        <label class="form-label" for="posterFile">Poster Artwork</label>
+                        <div class="file-drop" id="fileDrop">
+                            <i class="bi bi-image"></i>
+                            <p>Drag & drop or click to browse</p>
+                            <input type="file" id="posterFile" accept="image/*" hidden>
+                        </div>
+                        <div class="preview" id="preview"><img id="previewImg" alt="Preview"></div>
+                    </div>
+                    <!-- Video Files (Batch) -->
+                    <div class="col-12">
+                        <label class="form-label" for="videoFile">Film Video File(s) (Batch)</label>
+                        <div class="file-drop" id="videoDrop">
+                            <i class="bi bi-play-btn"></i>
+                            <p>Select multiple video files</p>
+                            <input type="file" id="videoFile" accept="video/*" multiple hidden>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="uploadBtn">
+                    <span class="spinner-border spinner-border-sm" id="btnSpinner" style="display:none;"></span>
+                    <i class="bi bi-hdd-network" id="btnIcon"></i>
+                    <span id="btnText">Upload to Server</span>
+                </button>
+            </form>
+
+            <!-- Batch Queue Preview -->
+            <div class="batch-queue mt-3" id="batchQueue" style="display:none;">
+                <h6 class="mb-2"><i class="bi bi-list-ul"></i> Upload Queue</h6>
+                <div id="queueList"></div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-wrap mt-3" id="progressWrap">
+                <div class="progress-label">
+                    <span id="progressText">Uploading...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div class="modal-backdrop custom-backdrop" id="confirmModalBackdrop"></div>
+    <div class="custom-modal" id="confirmModal">
+        <div class="modal-header border-0 pb-2">
+            <h3 id="confirmModalTitle"><i class="bi bi-question-circle"></i> Confirm</h3>
+        </div>
+        <div class="modal-body">
+            <p id="confirmModalMessage"></p>
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="confirmModalCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="confirmModalConfirm">Confirm</button>
+        </div>
+    </div>
+
+    <!-- Guide TAB -->
+    <button class="guide-btn" id="guideBtn"><i class="bi bi-question-lg"></i></button>
+    <div class="guide-modal" id="guideModal">
+        <button class="guide-close" id="guideClose"><i class="bi bi-x-lg"></i></button>
+        <h3><i class="bi bi-lightbulb"></i> Quick Guide</h3>
+        <ul>
+            <li>1. Select "Create New Film" or "Update / Continue Film"</li>
+            <li>2. Fill in the film details</li>
+            <li>3. Enter price (applies to whole movie or series)</li>
+            <li>4. Upload poster (file)</li>
+            <li>5. Select multiple video files (batch)</li>
+            <li>6. Click "Upload to Server" to finish</li>
+        </ul>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../javascript.js/supabase.js"></script>
+    <script src="admin-manage.js"></script>
+
+    <!-- UI Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sidebar toggle
+            var sidebar = document.getElementById('sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            var openBtn = document.getElementById('hamburgerBtn');
+            var closeBtn = document.getElementById('closeSidebar');
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('visible');
+            }
+            openBtn.addEventListener('click', toggleSidebar);
+            closeBtn.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            // Drag & Drop
+            function setupDragDrop(fileDrop, fileInput) {
+                fileDrop.addEventListener('dragover', function(e) { e.preventDefault(); fileDrop.classList.add('dragover'); });
+                fileDrop.addEventListener('dragleave', function() { fileDrop.classList.remove('dragover'); });
+                fileDrop.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    fileDrop.classList.remove('dragover');
+                    var files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        fileInput.dispatchEvent(new Event('change'));
+                    }
+                });
+                fileDrop.addEventListener('click', function() { fileInput.click(); });
+            }
+            setupDragDrop(document.getElementById('fileDrop'), document.getElementById('posterFile'));
+            setupDragDrop(document.getElementById('videoDrop'), document.getElementById('videoFile'));
+
+            // Guide Modal
+            var guideBtn = document.getElementById('guideBtn');
+            var guideModal = document.getElementById('guideModal');
+            var guideClose = document.getElementById('guideClose');
+            guideBtn.addEventListener('click', function() { guideModal.classList.add('active'); });
+            guideClose.addEventListener('click', function() { guideModal.classList.remove('active'); });
+            guideModal.addEventListener('click', function(e) { if (e.target === guideModal) guideModal.classList.remove('active'); });
+
+            // Ctrl+Enter submit
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    document.getElementById('uploadBtn').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
