@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Notifications - Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #080808;
+            --surface: #151515;
+            --accent: #c71515;
+            --text: #ffffff;
+            --muted: #a7a7a7;
+            --border: rgba(255,255,255,0.08);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg); color: var(--text); min-height: 100vh;
+            overflow-x: hidden; user-select: none; -webkit-user-select: none;
+        }
+        /* Header */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: var(--bg); border-bottom: 1px solid var(--border);
+            padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .header .logo img { height: 32px; }
+        .header .back-btn { color: var(--muted); font-size: 0.9rem; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .header .back-btn:hover { color: var(--text); }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+        /* Title */
+        .page-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 16px; }
+        .page-title span { color: var(--accent); }
+
+        /* Clear All button */
+        .clear-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--muted);
+            padding: 8px 16px; border-radius: 50px; font-size: 0.85rem; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .clear-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* List */
+        .notif-list { display: flex; flex-direction: column; gap: 10px; }
+        .notif-item {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px; display: flex; gap: 12px; position: relative;
+            transition: transform 0.2s;
+        }
+        .notif-item:hover { transform: translateY(-2px); border-color: var(--accent); }
+        .notif-item.unread { border-left: 4px solid var(--accent); }
+
+        .notif-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(199,21,21,0.15); display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .notif-icon svg { width: 20px; height: 20px; fill: var(--accent); }
+
+        .notif-content { flex: 1; min-width: 0; }
+        .notif-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+        .notif-message { color: var(--muted); font-size: 0.85rem; line-height: 1.4; }
+        .notif-time { font-size: 0.7rem; color: var(--muted); margin-top: 6px; }
+
+        /* Empty state */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
+        .empty-state i { font-size: 3rem; color: var(--muted); margin-bottom: 12px; }
+        .empty-state p { color: var(--muted); }
+
+        .toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 12px 20px; border-radius: 8px; font-size: 0.9rem;
+            display: none; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .toast.show { display: block; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="home.html" class="back-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+            Back
+        </a>
+        <div class="logo"><img src="images/logo-akimark.png" onerror="this.onerror=null; this.src='images/logo-akimark.jpg';" alt="Akimark"></div>
+        <button class="clear-btn" id="clearAllBtn">Clear All</button>
+    </header>
+
+    <main class="container">
+        <h1 class="page-title">Your <span>Notifications</span></h1>
+        <div id="notifList" class="notif-list"></div>
+        <div id="emptyState" class="empty-state" style="display:none;">
+            <i>🔔</i>
+            <p>No notifications yet.</p>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="javascript.js/supabase.js"></script>
+    <script src="javascript.js/notifications.js"></script>
+</body>
+</html>

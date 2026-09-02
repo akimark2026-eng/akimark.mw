@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FULL-SCREEN LOADER */
+        .full-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 30px;
+        }
+        .full-loader img {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+        .full-loader .loader {
+            width: 60px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            animation: l11 2s infinite;
+        }
+        @keyframes l11 {
+            0%   {background: conic-gradient(#c71515 0     ,#0000 0)}
+            12.5%{background: conic-gradient(#c71515 45deg ,#0000 46deg)}
+            25%  {background: conic-gradient(#c71515 90deg ,#0000 91deg)}
+            37.5%{background: conic-gradient(#c71515 135deg,#0000 136deg)}
+            50%  {background: conic-gradient(#c71515 180deg,#0000 181deg)}
+            62.5%{background: conic-gradient(#c71515 225deg,#0000 226deg)}
+            75%  {background: conic-gradient(#c71515 270deg,#0000 271deg)}
+            87.5%{background: conic-gradient(#c71515 315deg,#0000 316deg)}
+            100% {background: conic-gradient(#c71515 360deg,#0000 360deg)}
+        }
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #c71515;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Full Screen Loader -->
+    <div class="full-loader" id="loader">
+        <img src="images/loader-logo.jpg" alt="Akimark Logo" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';">
+        <div class="loader"></div>
+        <div class="brand-text" id="brandText" style="display:none;">Aki<span style="color:#fff;">MARK</span></div>
+    </div>
+
+    <script src="javascript.js/index.js"></script>
+</body>
+</html>
