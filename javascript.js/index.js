@@ -3,7 +3,7 @@
 
     // ================== CONFIG ==================
     var APP_VERSION = '1.0.0';  // Fallback if Android bridge not available
-    var UPDATE_URL = 'https://akimark.mw/akimark-v2.apk'; // <-- URL YA UPDATE
+    var UPDATE_URL = 'https://akimark.mw'; // <-- URL YA UPDATE
 
     // Try to get version from Android bridge
     if (window.Android && window.Android.getAppVersion) {
