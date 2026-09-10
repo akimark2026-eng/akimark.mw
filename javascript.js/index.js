@@ -68,7 +68,7 @@
                 <p style="color:#ddd;margin-bottom:20px;font-size:16px;">PLEASE UPDATE NOW!</p>
                 <p style="color:#aaa;margin-bottom:25px;font-size:14px;">You are using an outdated version. Please update to continue.</p>
                 <button onclick="window.location.href='${UPDATE_URL}'" style="background:#c71515;color:#fff;border:none;padding:14px 30px;border-radius:30px;font-size:16px;font-weight:bold;cursor:pointer;box-shadow:0 5px 15px rgba(199,21,21,0.5);">
-                    🔄 UPDATE NOW
+                     DOWNLOAD NOW
                 </button>
             </div>
         `;
