@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FULL-SCREEN LOADER */
+        .full-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 40px;
+        }
+        .full-loader img {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           MORPHING INFINITY LOADER (NEW — replaces old conic loader)
+           ════════════════════════════════════════════════════════════ */
+        .morph-loader {
+            width: 90px;
+            height: 90px;
+            color: #c71515;
+            filter: drop-shadow(0 0 14px rgba(199,21,21,0.55));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .morph-loader svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .morph-loader path {
+            stroke: currentColor;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #c71515;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <!-- Full Screen Loader -->
+    <div class="full-loader" id="loader">
+        <img src="images/loader-logo.jpg" alt="Akimark Logo" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';">
+
+        <!-- NEW: Morphing Infinity Loader -->
+        <div class="morph-loader" role="status" aria-label="Loading">
+            <svg viewBox="0 0 24 24">
+                <path id="morphPath"
+                      d="M 12 8 C 14.21 8 16 9.79 16 12 C 16 14.21 14.21 16 12 16 C 9.79 16 8 14.21 8 12 C 8 9.79 9.79 8 12 8 Z" />
+            </svg>
+        </div>
+
+        <div class="brand-text" id="brandText" style="display:none;">Aki<span style="color:#fff;">MARK</span></div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         MORPHING INFINITY LOADER — pure JS, no React needed
+         Animates SVG path: circle → infinity → circle (reversed)
+         Uses Web Animations API with setInterval fallback
+         ════════════════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        var circleA  = "M 12 8 C 14.21 8 16 9.79 16 12 C 16 14.21 14.21 16 12 16 C 9.79 16 8 14.21 8 12 C 8 9.79 9.79 8 12 8 Z";
+        var infinity = "M 12 12 C 14 8.5 19 8.5 19 12 C 19 15.5 14 15.5 12 12 C 10 8.5 5 8.5 5 12 C 5 15.5 10 15.5 12 12 Z";
+        var circleB  = "M 12 16 C 14.21 16 16 14.21 16 12 C 16 9.79 14.21 8 12 8 C 9.79 8 8 9.79 8 12 C 8 14.21 9.79 16 12 16 Z";
+
+        var pathEl = document.getElementById("morphPath");
+        if (!pathEl) return;
+
+        var supportsPathAnim = false;
+        try {
+            // Test if WAAPI supports path() on d attribute
+            var testAnim = pathEl.animate(
+                [{ d: 'path("' + circleA + '")' }, { d: 'path("' + infinity + '")' }],
+                { duration: 1000, iterations: 1 }
+            );
+            testAnim.cancel();
+            supportsPathAnim = true;
+        } catch (e) {
+            supportsPathAnim = false;
+        }
+
+        if (supportsPathAnim) {
+            // ── Modern: Web Animations API (smooth, GPU-accelerated)
+            pathEl.animate(
+                [
+                    { d: 'path("' + circleA + '")' },
+                    { d: 'path("' + infinity + '")' },
+                    { d: 'path("' + circleB + '")' },
+                    { d: 'path("' + infinity + '")' },
+                    { d: 'path("' + circleA + '")' }
+                ],
+                {
+                    duration: 5000,
+                    iterations: Infinity,
+                    easing: "ease-in-out"
+                }
+            );
+        } else {
+            // ── Fallback: swap path every 1.25s with CSS transition feel
+            var states = [circleA, infinity, circleB, infinity, circleA];
+            var i = 0;
+            // Set initial
+            pathEl.setAttribute("d", states[0]);
+            // Kick off after small delay so initial render is stable
+            setTimeout(function() {
+                setInterval(function() {
+                    i = (i + 1) % states.length;
+                    pathEl.setAttribute("d", states[i]);
+                }, 1250);
+            }, 100);
+        }
+    })();
+    </script>
+
+    <script src="javascript.js/index.js"></script>
+</body>
+</html>
