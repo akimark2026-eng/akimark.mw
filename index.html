@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FULL-SCREEN LOADER */
+        .full-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 40px;
+        }
+        .full-loader img {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           FADE ARC LOADER
+           ════════════════════════════════════════════════════════════ */
+        .fade-arc {
+            width: 90px;
+            height: 90px;
+            color: #c71515;
+            filter: drop-shadow(0 0 14px rgba(199,21,21,0.55));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeArcSpin 1s linear infinite;
+        }
+        .fade-arc svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        @keyframes fadeArcSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .brand-text {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #c71515;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           FULL-SCREEN MAINTENANCE ALERT
+           ════════════════════════════════════════════════════════════ */
+        .maintenance-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            text-align: center;
+            overflow: hidden;
+            animation: maintenanceFadeIn 0.5s ease-out;
+        }
+        @keyframes maintenanceFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Animated gradient background (black base + red glow) */
+        .maintenance-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(700px 500px at 50% 0%, rgba(199,21,21,0.18), transparent 60%),
+                radial-gradient(600px 400px at 50% 100%, rgba(199,21,21,0.10), transparent 60%);
+            pointer-events: none;
+            animation: maintenancePulse 4s ease-in-out infinite;
+        }
+        @keyframes maintenancePulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .maintenance-card {
+            position: relative;
+            z-index: 1;
+            max-width: 460px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 26px;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           AKIMARK LOGO (replaces SVG warning icon)
+           ════════════════════════════════════════════════════════════ */
+        .maintenance-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        .maintenance-logo img {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 24px rgba(199,21,21,0.5));
+        }
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .maintenance-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .maintenance-title .accent {
+            color: #c71515;
+        }
+
+        .maintenance-message {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #B8B8B8;
+            max-width: 380px;
+        }
+        .maintenance-message strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* Progress-like shimmer bar */
+        .maintenance-bar {
+            width: 200px;
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+            margin-top: 6px;
+        }
+        .maintenance-bar::after {
+            content: '';
+            display: block;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #c71515, transparent);
+            animation: maintenanceBarSlide 1.6s ease-in-out infinite;
+        }
+        @keyframes maintenanceBarSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+        }
+
+        .maintenance-time {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #6a6a6a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            background: rgba(20,20,20,0.7);
+        }
+        .maintenance-time .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #c71515;
+            box-shadow: 0 0 0 0 rgba(199,21,21,0.7);
+            animation: maintenanceDotPulse 1.6s ease-in-out infinite;
+        }
+        @keyframes maintenanceDotPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(199,21,21,0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(199,21,21,0); }
+        }
+
+        @media (max-width: 480px) {
+            .maintenance-title { font-size: 1.25rem; }
+            .maintenance-message { font-size: 0.88rem; }
+            .maintenance-logo img { width: 160px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ════════════════════════════════════════════════════════════
+         FULL-SCREEN MAINTENANCE ALERT — sits above loader
+         Uses Akimark logo (image), no SVG icon
+         ════════════════════════════════════════════════════════════ -->
+    <div class="maintenance-screen" id="maintenanceScreen" role="alert" aria-live="assertive">
+        <div class="maintenance-card">
+
+            <!-- Akimark Logo (from image, not SVG/text) -->
+            <div class="maintenance-logo">
+                <img src="images/loader-logo.jpg"
+                     alt="Akimark"
+                     onerror="this.style.display='none';">
+            </div>
+
+            <div class="maintenance-title">
+                We'll Be <span class="accent">Back Soon</span>
+            </div>
+
+            <div class="maintenance-message">
+                Our system is currently undergoing scheduled maintenance to serve you better.
+                <br><br>
+                <strong>Please check back in a little while.</strong><br>
+                We appreciate your patience.
+            </div>
+
+            <div class="maintenance-bar"></div>
+
+            <div class="maintenance-time">
+                <span class="dot"></span>
+                <span>System Maintenance in Progress</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Full Screen Loader (below maintenance alert) -->
+    <div class="full-loader" id="loader">
+        <img src="images/loader-logo.jpg" alt="Akimark Logo" onerror="this.style.display='none'; document.getElementById('brandText').style.display='block';">
+
+        <!-- FadeArc Loader -->
+        <div class="fade-arc" role="status" aria-label="Loading">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="fadeArcLeading" x1="50%" x2="50%" y1="5.271%" y2="91.793%">
+                        <stop offset="0%" stop-color="currentColor" />
+                        <stop offset="100%" stop-color="currentColor" stop-opacity="0.55" />
+                    </linearGradient>
+                    <linearGradient id="fadeArcTrailing" x1="50%" x2="50%" y1="15.24%" y2="87.15%">
+                        <stop offset="0%" stop-color="currentColor" stop-opacity="0" />
+                        <stop offset="100%" stop-color="currentColor" stop-opacity="0.55" />
+                    </linearGradient>
+                </defs>
+                <g fill="none">
+                    <path
+                        d="M8.749.021a1.5 1.5 0 0 1 .497 2.958A7.5 7.5 0 0 0 3 10.375a7.5 7.5 0 0 0 7.5 7.5v3c-5.799 0-10.5-4.7-10.5-10.5C0 5.23 3.726.865 8.749.021"
+                        fill="url(#fadeArcLeading)"
+                        transform="translate(1.5 1.625)"
+                    />
+                    <path
+                        d="M15.392 2.673a1.5 1.5 0 0 1 2.119-.115A10.48 10.48 0 0 1 21 10.375c0 5.8-4.701 10.5-10.5 10.5v-3a7.5 7.5 0 0 0 5.007-13.084a1.5 1.5 0 0 1-.115-2.118"
+                        fill="url(#fadeArcTrailing)"
+                        transform="translate(1.5 1.625)"
+                    />
+                </g>
+            </svg>
+        </div>
+
+        <div class="brand-text" id="brandText" style="display:none;">Aki<span style="color:#fff;">MARK</span></div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         BLOCK NAVIGATION during maintenance
+         User stays on index.html until maintenance is over
+         ════════════════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        // Best-effort navigation blocker
+        // - Intercepts location.href, location.assign, location.replace
+        // - Console logs the blocked URL for debugging
+
+        function blockNav(url) {
+            console.warn("[Maintenance] Navigation blocked →", url);
+        }
+
+        // 1. Try to override window.location.href via Object.defineProperty
+        try {
+            var currentURL = window.location.href;
+            Object.defineProperty(window.location, "href", {
+                configurable: true,
+                get: function() { return currentURL; },
+                set: function(url) { blockNav(url); }
+            });
+        } catch (e) {
+            // Fallback below
+        }
+
+        // 2. Override location.assign / location.replace / location.reload
+        try {
+            if (window.location.assign) {
+                window.location.assign = function(url) { blockNav(url); };
+            }
+            if (window.location.replace) {
+                window.location.replace = function(url) { blockNav(url); };
+            }
+            if (window.location.reload) {
+                window.location.reload = function() {
+                    console.warn("[Maintenance] Reload blocked");
+                };
+            }
+        } catch (e) {
+            console.warn("[Maintenance] Could not override location methods", e);
+        }
+
+        // 3. Intercept common JS navigation patterns on document
+        //    (in case some code uses window.open or form.submit)
+        try {
+            var origOpen = window.open;
+            window.open = function(url) {
+                blockNav(url);
+                return null;
+            };
+        } catch (e) {}
+    })();
+    </script>
+
+    <script src="javascript.js/index.js"></script>
+</body>
+</html>
