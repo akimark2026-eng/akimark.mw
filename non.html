@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#080808">
+    <title>Watch Movies - Akimark</title>
+
+    <link rel="preconnect" href="https://jnqwvmxuieeelvukhcsq.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://jnqwvmxuieeelvukhcsq.supabase.co">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #080808;
+            --bg-surface: #151515;
+            --bg-secondary: #1C1C1C;
+            --bg-content: #0a0a0a;
+            --accent: #c71515;
+            --accent-soft: #a00f0f;
+            --accent-glow: #ff2d2d;
+            --white: #FFFFFF;
+            --text-muted: #A7A7A7;
+            --icon-grey: #8a8a8a;
+            --border-subtle: rgba(255,255,255,0.06);
+            --radius: 8px;
+            --radius-sm: 6px;
+            --transition: 0.25s cubic-bezier(0.2,0,0,1);
+            --header-h: 56px;
+        }
+
+        html, body {
+            overscroll-behavior-y: contain;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar,
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-content); color: #fff; min-height: 100vh; overflow-x: hidden;
+            padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+            user-select: none; -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        a { color: inherit; text-decoration: none; border: none; outline: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; outline: none; }
+        img { display: block; max-width: 100%; border: none; outline: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+        .accent-text { color: var(--accent); }
+
+        /* ════════════════════════════════════════════════════════════
+           SKELETON CARDS — match real card structure exactly
+           ════════════════════════════════════════════════════════════ */
+        .skeleton-card {
+            background: #121212;
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: none;
+        }
+        .skeleton-card .sk-badge {
+            height: 26px;
+            background: linear-gradient(135deg, rgba(199,21,21,0.28), rgba(160,15,15,0.22));
+            position: relative;
+            overflow: hidden;
+        }
+        .skeleton-card .sk-badge::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+        .skeleton-card .sk-poster {
+            aspect-ratio: 3/4;
+            background: linear-gradient(135deg, #1a1a1a 0%, #121212 50%, #1a1a1a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .skeleton-card .sk-poster::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+        .skeleton-card .sk-info {
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+        }
+        .skeleton-card .sk-info::after {
+            content: '';
+            display: block;
+            width: 60%;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+            background-size: 200% 100%;
+            animation: shimmerLine 1.6s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @keyframes shimmerLine {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           HEADER — with LARGER auth buttons (better touch targets)
+           ════════════════════════════════════════════════════════════ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #080808;
+            border: none;
+            transition: transform 0.35s cubic-bezier(0.2,0,0,1), box-shadow 0.3s ease, background 0.3s ease;
+            will-change: transform;
+        }
+        .header.hidden { transform: translateY(-100%); }
+        .header.scrolled {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+            background: rgba(8,8,8,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .header-row { padding: 12px 0; }
+        .header .container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .logo img { height: 34px; width: auto; object-fit: contain; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 2px;
+            padding-right: 2px;
+        }
+
+        /* Search icon button (compact, still touch-friendly) */
+        .header-icon-btn {
+            position: relative;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #1a1a1a, #101010);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .header-icon-btn:hover { background: linear-gradient(145deg, #222, #151515); }
+        .header-icon-btn:active { transform: scale(0.94); background: linear-gradient(145deg, #2a1010, #1a0808); }
+        .header-icon-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--icon-grey);
+            stroke-width: 2;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.2s;
+        }
+        .header-icon-btn:hover svg { stroke: #fff; }
+
+        /* ════════════════════════════════════════════════════════════
+           🆕 BIGGER AUTH BUTTONS (Login / Register)
+           • Larger min-width so text never wraps
+           • Taller padding → easy tap on small phones
+           • Slightly bigger font (0.85rem)
+           • Minimum 44px height (Apple HIG) / 48px (Material)
+           ════════════════════════════════════════════════════════════ */
+        .auth-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 12px 20px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            min-width: 76px;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            -webkit-appearance: none;
+            appearance: none;
+            line-height: 1;
+        }
+        .auth-btn:active { transform: scale(0.94); }
+        .auth-btn.login {
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(199,21,21,0.45);
+        }
+        .auth-btn.login:hover {
+            box-shadow: 0 6px 18px rgba(199,21,21,0.6);
+        }
+        .auth-btn.register {
+            background: #1a1a1a;
+            color: #fff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .auth-btn.register:hover {
+            background: #202020;
+        }
+
+        /* Small phones (≤ 420px): icons smaller, but buttons keep full touch size */
+        @media (max-width: 420px) {
+            .logo img { height: 30px; }
+            .header-row { padding: 10px 0; }
+            .header-icon-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 12px;
+            }
+            .header-icon-btn svg { width: 18px; height: 18px; }
+            .header-actions { gap: 6px; }
+            .auth-btn {
+                padding: 11px 16px;
+                font-size: 0.8rem;
+                min-width: 68px;
+                min-height: 42px;
+                border-radius: 12px;
+            }
+        }
+
+        /* Very small phones (≤ 360px): reduce padding but keep touch target */
+        @media (max-width: 360px) {
+            .logo img { height: 28px; }
+            .header-icon-btn {
+                width: 38px;
+                height: 38px;
+            }
+            .header-actions { gap: 5px; }
+            .auth-btn {
+                padding: 10px 12px;
+                font-size: 0.72rem;
+                min-width: 60px;
+                min-height: 42px;
+                border-radius: 11px;
+                letter-spacing: 0.3px;
+            }
+        }
+
+        /* Maintenance banner */
+        .maintenance-banner {
+            display: none;
+            background: linear-gradient(135deg, #c71515 0%, #7a0d0d 50%, #a00f0f 100%);
+            color: #fff;
+            border: none;
+            overflow: hidden;
+        }
+        .maintenance-banner.visible { display: block; }
+        .maintenance-content { display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; padding: 12px 16px; }
+        .maintenance-icon { flex-shrink: 0; width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .maintenance-icon svg { width: 20px; height: 20px; fill: #fff; }
+        .maintenance-text { flex: 1; display: flex; flex-direction: column; gap: 3px; line-height: 1.35; min-width: 0; }
+        .maintenance-text .title { font-size: 0.88rem; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .maintenance-text .title .clock { background: rgba(0,0,0,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+        .maintenance-text .body { font-size: 0.8rem; opacity: 0.96; }
+        .maintenance-text .body strong { color: #fff; font-weight: 700; }
+        .maintenance-close { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; border: none; }
+        .maintenance-close svg { width: 16px; height: 16px; fill: #fff; }
+
+        @media (max-width: 600px) {
+            .maintenance-content { padding: 10px 12px; gap: 10px; }
+            .maintenance-icon { width: 30px; height: 30px; }
+            .maintenance-icon svg { width: 17px; height: 17px; }
+            .maintenance-text .title { font-size: 0.8rem; }
+            .maintenance-text .body { font-size: 0.72rem; }
+        }
+
+        /* SEARCH */
+        .search-subheader { background: #0e0e0e; padding: 0; border: none; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+        .search-subheader.open { max-height: 400px; overflow: visible; padding: 10px 16px; }
+        .search-wrapper { position: relative; max-width: 600px; margin: 0 auto; }
+        .search-wrapper input { width: 100%; padding: 11px 14px 11px 42px; border-radius: 12px; border: none; background: #1a1a1a; color: #fff; font-size: 0.9rem; outline: none; -webkit-appearance: none; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+        .search-wrapper input:focus { background: #202020; box-shadow: inset 0 0 0 1px rgba(199,21,21,0.5); }
+        .search-wrapper svg.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; stroke: var(--icon-grey); fill: none; stroke-width: 2; pointer-events: none; }
+        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: #151515; border-radius: 12px; max-height: 250px; overflow-y: auto; z-index: 1000; display: none; margin-top: 6px; box-shadow: 0 12px 32px rgba(0,0,0,0.6); }
+        .search-results.visible { display: block; }
+        .search-results .result-item { padding: 12px 14px; cursor: pointer; font-size: 0.9rem; color: #fff; }
+        .search-results .result-item:active { background: rgba(199,21,21,0.3); }
+
+        /* CATEGORIES */
+        .subheader { background: #0e0e0e; padding: 8px 0; border: none; position: sticky; top: var(--header-h); z-index: 99; transition: transform 0.35s cubic-bezier(0.2,0,0,1); }
+        .subheader.hidden { transform: translateY(-100%); }
+        .subheader .container { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 10px; }
+        .subheader .container::-webkit-scrollbar { display: none; }
+        .category-chip {
+            flex-shrink: 0;
+            padding: 8px 18px;
+            border-radius: 10px;
+            background: #1a1a1a;
+            border: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            white-space: nowrap;
+            cursor: pointer;
+            -webkit-appearance: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+        .category-chip.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(199,21,21,0.35); }
+        .category-chip:active { background: var(--accent-soft); }
+
+        /* TRANSLATOR BAR */
+        .translator-bar { padding: 8px 0; border: none; position: sticky; top: calc(var(--header-h) + 48px); z-index: 98; transition: transform 0.35s cubic-bezier(0.2,0,0,1); background: #0e0e0e; }
+        .translator-bar.hidden { transform: translateY(-100%); }
+        .translator-bar .container { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 0 10px; }
+        .translator-bar .container::-webkit-scrollbar { display: none; }
+        .translator-chip {
+            flex-shrink: 0;
+            padding: 6px 14px;
+            border-radius: 50px;
+            background: #1a1a1a;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all var(--transition);
+            white-space: nowrap;
+            cursor: pointer;
+            -webkit-appearance: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+        .translator-chip.active { background: var(--accent-soft); color: #fff; box-shadow: 0 2px 8px rgba(199,21,21,0.35); }
+        .translator-chip:active { background: var(--accent); }
+
+        /* MOVIE GRID */
+        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px 0; transition: opacity 0.25s ease; }
+        .section-title { font-size: 1rem; font-weight: 700; margin: 8px 0 4px; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .section-title img { width: 44px; height: 44px; object-fit: contain; }
+
+        /* MOVIE CARD */
+        .movie-card {
+            background: #121212;
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform var(--transition);
+            cursor: pointer;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .movie-card:active { transform: scale(0.98); }
+
+        .movie-card .translator-badge {
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 5px 8px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .movie-card .poster {
+            aspect-ratio: 3/4;
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #121212 50%, #1a1a1a 100%);
+            overflow: hidden;
+        }
+        .movie-card .poster::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shimmer 1.8s infinite;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        .movie-card .poster.loaded::before { opacity: 0; animation: none; }
+
+        .movie-card .poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.55s ease;
+            opacity: 0;
+            position: relative;
+            z-index: 2;
+            -webkit-user-drag: none;
+        }
+        .movie-card .poster img.loaded { opacity: 1; }
+        .movie-card:active .poster img { transform: scale(1.04); transition: transform 0.4s ease; }
+
+        .movie-card .price-tag {
+            position: absolute;
+            bottom: 8px; right: 8px;
+            background: rgba(0,0,0,0.85);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            z-index: 3;
+            border: none;
+        }
+        .movie-card .badge {
+            position: absolute;
+            top: 8px; right: 8px;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 20px;
+            z-index: 3;
+            text-transform: uppercase;
+            border: none;
+        }
+        .movie-card .info {
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+        }
+        .movie-card .info h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .card-loading { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .card-spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.3); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+
+        /* EMPTY STATE */
+        .more-films-coming {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            border-radius: var(--radius);
+            color: var(--text-muted);
+            text-align: center;
+            min-height: 200px;
+        }
+        .more-films-coming .icon { width: 80px; height: 80px; background: var(--accent); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .more-films-coming .icon svg { width: 48px; height: 48px; fill: #fff; }
+        .more-films-coming h4 { color: #fff; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .more-films-coming p { color: var(--text-muted); font-size: 0.9rem; max-width: 300px; line-height: 1.4; }
+        .more-films-coming .underline { width: 40px; height: 4px; background: var(--accent); border-radius: 2px; margin-top: 10px; }
+
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 200;
+            background: rgba(8,8,8,0.98);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+            height: calc(60px + env(safe-area-inset-bottom, 0px));
+            border: none;
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--icon-grey);
+            transition: color var(--transition);
+            padding: 4px 8px;
+            min-width: 60px;
+            position: relative;
+            flex: 1;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border: none;
+            outline: none;
+        }
+        .bottom-nav a img {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(58%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(85%);
+            transition: filter var(--transition), transform var(--transition);
+            border: none;
+            outline: none;
+            -webkit-user-drag: none;
+        }
+        .bottom-nav a.active img {
+            filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(6000%) hue-rotate(352deg) brightness(90%) contrast(95%);
+            transform: translateY(-1px);
+        }
+        .bottom-nav a.active { color: var(--accent); }
+        .bottom-nav a:active { transform: scale(0.94); }
+
+        .nav-icon-wrapper { position: relative; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; }
+
+        .nav-badge {
+            position: absolute;
+            top: -6px; right: -8px;
+            background: #c71515;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 50%;
+            min-width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 3;
+            border: none;
+            box-shadow: 0 2px 5px rgba(199,21,21,0.5);
+        }
+
+        /* LIVE BADGE */
+        .live-badge {
+            position: absolute;
+            top: -10px; right: -16px;
+            background: linear-gradient(135deg, #ff2d2d 0%, #c71515 100%);
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            padding: 3px 6px 3px 5px;
+            border-radius: 20px;
+            letter-spacing: 0.6px;
+            line-height: 1;
+            text-transform: uppercase;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 2px 8px rgba(199,21,21,0.6);
+            animation: livePulse 1.6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .live-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            animation: liveDot 1.2s ease-in-out infinite;
+            box-shadow: 0 0 6px rgba(255,255,255,0.9);
+        }
+
+        .live-burst {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+            z-index: 4;
+        }
+        .live-burst span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            font-size: 13px;
+            line-height: 1;
+            opacity: 0;
+            transform: translate(-50%, 0);
+            animation: emojiFloatUp 2.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.55));
+            will-change: transform, opacity;
+        }
+        .live-burst span:nth-child(1) { animation-delay: 0s;   --tx: -14px; --tz: 1.05; }
+        .live-burst span:nth-child(2) { animation-delay: 0.33s; --tx:  10px; --tz: 0.95; }
+        .live-burst span:nth-child(3) { animation-delay: 0.66s; --tx: -6px;  --tz: 1.10; }
+        .live-burst span:nth-child(4) { animation-delay: 0.99s; --tx:  16px; --tz: 1.00; }
+        .live-burst span:nth-child(5) { animation-delay: 1.32s; --tx: -12px; --tz: 0.92; }
+        .live-burst span:nth-child(6) { animation-delay: 1.65s; --tx:   8px; --tz: 1.08; }
+        .live-burst span:nth-child(7) { animation-delay: 1.98s; --tx: -18px; --tz: 0.98; }
+        .live-burst span:nth-child(8) { animation-delay: 2.31s; --tx:  14px; --tz: 1.03; }
+
+        @keyframes emojiFloatUp {
+            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.3); }
+            12%  { opacity: 1; transform: translate(-50%, -6px) scale(var(--tz, 1)); }
+            70%  { opacity: 0.9; }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--tx, 0px)), -62px) scale(calc(var(--tz, 1) * 0.85)); }
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 0 rgba(199,21,21,0.6); }
+            50% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 6px rgba(199,21,21,0); }
+        }
+        @keyframes liveDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* TOAST & WATERMARK */
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 500; background: var(--bg-surface); border-radius: var(--radius-sm); padding: 12px 20px; display: none; align-items: center; gap: 10px; font-size: 0.9rem; max-width: 90%; box-shadow: 0 12px 32px rgba(0,0,0,0.6); }
+        .toast.visible { display: flex; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3rem; color: rgba(255,255,255,0.1); pointer-events: none; z-index: 9999; text-transform: uppercase; white-space: nowrap; user-select: none; display: none; }
+        .watermark.active { display: block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="watermark" id="watermark">AKIMARK</div>
+
+    <!-- HEADER (Logo + Search + Login + Register) -->
+    <header class="header" id="mainHeader">
+        <div class="container header-row">
+            <div class="logo">
+                <img src="images/logo-akimark.png" onerror="this.onerror=null; this.src='images/logo-akimark.jpg';" alt="Akimark">
+            </div>
+            <div class="header-actions">
+                <button class="header-icon-btn" id="searchNavBtn" aria-label="Search">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+                <a href="login.html" class="auth-btn login">Login</a>
+                <a href="register.html" class="auth-btn register">Register</a>
+            </div>
+        </div>
+
+        <div class="maintenance-banner" id="maintenanceBanner" role="alert" aria-live="polite">
+            <div class="maintenance-content">
+                <div class="maintenance-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                </div>
+                <div class="maintenance-text">
+                    <div class="title">
+                        System Maintenance Notice
+                        <span class="clock" id="malawiClock">--:--</span>
+                    </div>
+                    <div class="body">
+                        We'll be performing system upgrades starting at <strong>12:00 AM</strong>. Service may be temporarily unavailable. Thank you for your patience.
+                    </div>
+                </div>
+                <button class="maintenance-close" id="maintenanceClose" aria-label="Close notice">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- SEARCH -->
+    <div class="search-subheader" id="searchSubheader">
+        <div class="search-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" placeholder="Search movies, series, translators..." id="searchInput">
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="subheader" id="subheader">
+        <div class="container">
+            <button class="category-chip active" data-category="all">All</button>
+            <button class="category-chip" data-category="series">Series</button>
+            <button class="category-chip" data-category="indian">Indian</button>
+            <button class="category-chip" data-category="actions">Actions</button>
+            <button class="category-chip" data-category="nigeria">Nigeria</button>
+            <button class="category-chip" data-category="china">China</button>
+            <button class="category-chip" data-category="turkish">Turkish</button>
+            <button class="category-chip" data-category="korean">Korea</button>
+            <button class="category-chip" data-category="philippines">Philippines</button>
+            <button class="category-chip" data-category="cartoons">Cartoons</button>
+        </div>
+    </div>
+
+    <!-- TRANSLATOR BAR -->
+    <div class="translator-bar" id="translatorBar">
+        <div class="container" id="translatorContainer"></div>
+    </div>
+
+    <!-- MAIN -->
+    <main class="container">
+        <h2 class="section-title" style="margin-top:16px;">
+            <img src="images/latest.png" onerror="this.style.display='none'"> Latest <span class="accent-text">Films</span>
+        </h2>
+        <div id="latestGrid" class="movie-grid">
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+        </div>
+
+        <h2 class="section-title" style="margin-top:24px;">
+            All <span class="accent-text">Films</span>
+        </h2>
+        <div id="homeGrid" class="movie-grid">
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+            <div class="skeleton-card"><div class="sk-badge"></div><div class="sk-poster"></div><div class="sk-info"></div></div>
+        </div>
+        <div id="scrollSentinel" style="height:20px;"></div>
+    </main>
+
+    <!-- BOTTOM NAV (Movies | Live | My Movies | Login) -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" class="active" id="navMovies">
+            <img src="images/akimark-movies.svg" alt="Movies">
+            <span>Movies</span>
+        </a>
+        <a href="live.html" id="navLive">
+            <div class="nav-icon-wrapper">
+                <img src="images/akimark-live.svg" alt="Live">
+                <span class="live-badge">LIVE</span>
+                <span class="live-burst" aria-hidden="true">
+                    <span>😍</span>
+                    <span>🔥</span>
+                    <span>❤️</span>
+                    <span>💬</span>
+                    <span>😮</span>
+                    <span>👏</span>
+                    <span>✨</span>
+                    <span>🎉</span>
+                </span>
+            </div>
+            <span>Live</span>
+        </a>
+        <a href="non-my-movies.html" id="navMyMovies">
+            <div class="nav-icon-wrapper">
+                <img src="images/my-films.svg" alt="My Movies">
+                <span id="myMoviesBadge" class="nav-badge">0</span>
+            </div>
+            <span>My Movies</span>
+        </a>
+        <a href="login.html" id="navLogin">
+            <img src="images/login.svg" alt="Login" onerror="this.style.display='none'">
+            <span>Login</span>
+        </a>
+    </nav>
+
+    <div class="toast" id="toast"><span id="toastMsg">Action completed</span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="javascript.js/supabase.js"></script>
+    <script src="javascript.js/non.js?v=20260925-2"></script>
+</body>
+</html>
