@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FULL-SCREEN LOADER */
+        .full-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            gap: 44px;
+            padding: 30px;
+        }
+
+        .loader-logo {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+            animation: logoFadeIn 0.8s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        @keyframes logoFadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           🎬 DUAL CIRCLE LOADER — pure CSS, mask-based stripes
+           ════════════════════════════════════════════════════════════ */
+        .loader {
+            width: 56px;
+            aspect-ratio: 1;
+            display: grid;
+            filter: drop-shadow(0 0 12px rgba(199, 21, 21, 0.55));
+        }
+        .loader:before,
+        .loader:after {
+            content: "";
+            grid-area: 1 / 1;
+            border-radius: 50%;
+            background: #c71515;
+            -webkit-mask: repeating-linear-gradient(#000 0 5px, #0000 0 10px);
+            mask: repeating-linear-gradient(#000 0 5px, #0000 0 10px);
+            animation: l35 1.5s infinite;
+        }
+        .loader:after {
+            -webkit-mask: repeating-linear-gradient(#0000 0 5px, #000 0 10px);
+            mask: repeating-linear-gradient(#0000 0 5px, #000 0 10px);
+            --s: -1;
+        }
+        @keyframes l35 {
+            0%,
+            10% { transform: translate(0) rotate(0); }
+            35% { transform: translate(calc(var(--s, 1) * 50%)) rotate(0); }
+            66% { transform: translate(calc(var(--s, 1) * 50%)) rotate(calc(var(--s, 1) * 180deg)); }
+            90%,
+            100% { transform: translate(0) rotate(calc(var(--s, 1) * 180deg)); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Full Screen Loader -->
+    <div class="full-loader" id="loader">
+
+        <img
+            src="images/loader-logo.jpg"
+            alt="Akimark"
+            class="loader-logo"
+            onerror="this.style.display='none';">
+
+        <!-- 🎬 Dual Circle Loader -->
+        <div class="loader" role="status" aria-label="Loading"></div>
+
+    </div>
+
+    <script src="javascript.js/index.js?v=20260925-2"></script>
+</body>
+</html>
