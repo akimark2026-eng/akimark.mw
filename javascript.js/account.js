@@ -43,7 +43,7 @@
         .then(function(data) {
             if (!data.valid) {
                 clearSession();
-                window.location.href = 'login.html';
+                window.location.href = 'non.html';
                 return;
             }
 
@@ -66,7 +66,7 @@
         })
         .catch(function() {
             clearSession();
-            window.location.href = 'login.html';
+            window.location.href = 'non.html';
         });
     }
 
@@ -127,7 +127,7 @@
 
     function logout() {
         clearSession();
-        window.location.href = 'login.html';
+        window.location.href = 'non.html';
     }
 
     function showToast(msg, isError) {
