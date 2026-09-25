@@ -537,7 +537,7 @@
         if (!banner) return;
 
         // Show banner
-        banner.classList.add('visible');
+        banner.classList.add('hide');
 
         // Live clock (Malawi time = UTC+2)
         function updateClock() {
