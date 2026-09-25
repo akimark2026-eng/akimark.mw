@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#080808">
+    <title>Live - Coming Soon | Akimark</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #080808;
+            --bg-surface: #151515;
+            --bg-secondary: #1C1C1C;
+            --bg-content: #0a0a0a;
+            --accent: #c71515;
+            --accent-soft: #a00f0f;
+            --accent-glow: #ff2d2d;
+            --white: #FFFFFF;
+            --text-muted: #A7A7A7;
+            --icon-grey: #8a8a8a;
+            --border-subtle: rgba(255,255,255,0.06);
+            --radius: 8px;
+            --radius-lg: 16px;
+            --transition: 0.25s cubic-bezier(0.2,0,0,1);
+        }
+
+        html, body {
+            overscroll-behavior-y: contain;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar,
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-content);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+            user-select: none; -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+        a { color: inherit; text-decoration: none; border: none; outline: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; outline: none; }
+        img { display: block; max-width: 100%; border: none; outline: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+
+        /* ════════════════════════════════════════════════════════════
+           HEADER (same as home)
+           ════════════════════════════════════════════════════════════ */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: #080808;
+            border: none;
+            transition: transform 0.35s cubic-bezier(0.2,0,0,1), box-shadow 0.3s ease, background 0.3s ease;
+            will-change: transform;
+        }
+        .header.hidden { transform: translateY(-100%); }
+        .header.scrolled {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+            background: rgba(8,8,8,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .header-row { padding: 10px 0; }
+        .header .container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .logo img { height: 36px; width: auto; object-fit: contain; }
+        .header-actions { display: flex; align-items: center; gap: 8px; margin-right: 2px; padding-right: 2px; }
+
+        .header-icon-btn {
+            position: relative;
+            width: 40px; height: 40px;
+            border-radius: 14px;
+            background: linear-gradient(145deg, #1a1a1a, #101010);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .header-icon-btn:hover { background: linear-gradient(145deg, #222, #151515); }
+        .header-icon-btn:active { transform: scale(0.94); background: linear-gradient(145deg, #2a1010, #1a0808); }
+        .header-icon-btn svg { width: 20px; height: 20px; stroke: var(--icon-grey); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+        .header-icon-btn:hover svg { stroke: #fff; }
+
+        .notification-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            background: linear-gradient(135deg, #ff2d2d, #b71010);
+            color: #fff;
+            font-size: 0.58rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 10px;
+            min-width: 16px;
+            height: 16px;
+            text-align: center;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(199,21,21,0.5);
+            border: none;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           COMING SOON — HERO SECTION
+           ════════════════════════════════════════════════════════════ */
+        .coming-soon-page {
+            min-height: calc(100vh - 82px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Ambient glow backgrounds */
+        .coming-soon-page::before,
+        .coming-soon-page::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .coming-soon-page::before {
+            top: -10%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(199,21,21,0.35), transparent 70%);
+            animation: glowFloat 8s ease-in-out infinite;
+        }
+        .coming-soon-page::after {
+            bottom: -10%;
+            left: -20%;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255,45,45,0.22), transparent 70%);
+            animation: glowFloat 10s ease-in-out infinite reverse;
+        }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+
+        .coming-soon-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           LIVE BADGE (top) — pulses + burst
+           ════════════════════════════════════════════════════════════ */
+        .live-top-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #ff2d2d 0%, #c71515 100%);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 7px 14px;
+            border-radius: 24px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            box-shadow: 0 6px 20px rgba(199,21,21,0.5), 0 0 0 0 rgba(199,21,21,0.6);
+            animation: liveTopPulse 2s ease-in-out infinite;
+            margin-bottom: 22px;
+            position: relative;
+        }
+        .live-top-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: liveDotPulse 1.2s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(255,255,255,0.9);
+        }
+        @keyframes liveTopPulse {
+            0%, 100% { box-shadow: 0 6px 20px rgba(199,21,21,0.5), 0 0 0 0 rgba(199,21,21,0.6); }
+            50% { box-shadow: 0 6px 20px rgba(199,21,21,0.5), 0 0 0 12px rgba(199,21,21,0); }
+        }
+        @keyframes liveDotPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.6); }
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           TV ICON — animated broadcast tower
+           ════════════════════════════════════════════════════════════ */
+        .broadcast-icon {
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 26px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Outer ring pulse */
+        .broadcast-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid rgba(199,21,21,0.5);
+            animation: ringExpand 2.4s ease-out infinite;
+        }
+        .broadcast-ring:nth-child(2) { animation-delay: 0.8s; }
+        .broadcast-ring:nth-child(3) { animation-delay: 1.6s; }
+
+        @keyframes ringExpand {
+            0% { transform: scale(0.7); opacity: 0.9; border-width: 3px; }
+            100% { transform: scale(1.5); opacity: 0; border-width: 1px; }
+        }
+
+        /* Inner circle with TV icon */
+        .broadcast-core {
+            position: relative;
+            z-index: 2;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                0 8px 32px rgba(0,0,0,0.6),
+                0 0 60px rgba(199,21,21,0.25);
+        }
+
+        .broadcast-core svg {
+            width: 46px;
+            height: 46px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px rgba(199,21,21,0.6));
+            animation: tvGlow 2.4s ease-in-out infinite;
+        }
+        @keyframes tvGlow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(199,21,21,0.4)); }
+            50% { filter: drop-shadow(0 0 14px rgba(199,21,21,0.85)); }
+        }
+
+        /* Signal waves above TV (animated bars) */
+        .signal-waves {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+            align-items: flex-end;
+            height: 20px;
+        }
+        .signal-waves span {
+            width: 3px;
+            background: linear-gradient(to top, var(--accent), var(--accent-glow));
+            border-radius: 2px;
+            animation: signalBar 1.2s ease-in-out infinite;
+        }
+        .signal-waves span:nth-child(1) { animation-delay: 0s; }
+        .signal-waves span:nth-child(2) { animation-delay: 0.15s; }
+        .signal-waves span:nth-child(3) { animation-delay: 0.3s; }
+        .signal-waves span:nth-child(4) { animation-delay: 0.45s; }
+        .signal-waves span:nth-child(5) { animation-delay: 0.6s; }
+
+        @keyframes signalBar {
+            0%, 100% { height: 6px; opacity: 0.4; }
+            50% { height: 18px; opacity: 1; }
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           TITLE + SUBTITLE
+           ════════════════════════════════════════════════════════════ */
+        .coming-title {
+            font-size: 1.9rem;
+            font-weight: 900;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 40%, #a7a7a7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        .coming-title .accent {
+            background: linear-gradient(135deg, #ff2d2d, #c71515);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .coming-subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .coming-subtitle strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           COUNTDOWN
+           ════════════════════════════════════════════════════════════ */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+        .countdown-cell {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            border-radius: 12px;
+            padding: 12px 8px;
+            min-width: 64px;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                0 6px 18px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .countdown-cell::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(199,21,21,0.5), transparent);
+        }
+        .countdown-num {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            letter-spacing: -0.5px;
+            font-variant-numeric: tabular-nums;
+        }
+        .countdown-label {
+            display: block;
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            font-weight: 700;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           ACTION BUTTONS
+           ════════════════════════════════════════════════════════════ */
+        .coming-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .btn-notify {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            letter-spacing: 0.5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 22px rgba(199,21,21,0.4);
+            text-transform: uppercase;
+        }
+        .btn-notify:active { transform: scale(0.97); }
+        .btn-notify svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .btn-notify.subscribed {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            color: var(--accent);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(199,21,21,0.4);
+        }
+
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #1a1a1a;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+        .btn-back-home:active { transform: scale(0.97); background: #222; }
+        .btn-back-home svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 500;
+            background: var(--bg-surface);
+            border-radius: 10px;
+            padding: 12px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            max-width: 90%;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(199,21,21,0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0,0,1);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+        .toast svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* ════════════════════════════════════════════════════════════
+           BOTTOM NAV (same as home)
+           ════════════════════════════════════════════════════════════ */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 200;
+            background: rgba(8,8,8,0.98);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+            height: calc(60px + env(safe-area-inset-bottom, 0px));
+            border: none;
+            box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
+        }
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--icon-grey);
+            transition: color var(--transition);
+            padding: 4px 8px;
+            min-width: 60px;
+            position: relative;
+            flex: 1;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border: none;
+            outline: none;
+        }
+        .bottom-nav a img {
+            width: 25px;
+            height: 25px;
+            object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(58%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(85%);
+            transition: filter var(--transition), transform var(--transition);
+            border: none;
+            outline: none;
+            -webkit-user-drag: none;
+        }
+        .bottom-nav a.active img {
+            filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(6000%) hue-rotate(352deg) brightness(90%) contrast(95%);
+            transform: translateY(-1px);
+        }
+        .bottom-nav a.active { color: var(--accent); }
+        .bottom-nav a:active { transform: scale(0.94); }
+
+        .nav-icon-wrapper { position: relative; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; }
+
+        .nav-badge {
+            position: absolute;
+            top: -6px; right: -8px;
+            background: #c71515;
+            color: #fff;
+            font-size: 0.6rem;
+            font-weight: 800;
+            padding: 2px 5px;
+            border-radius: 50%;
+            min-width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            z-index: 3;
+            border: none;
+            box-shadow: 0 2px 5px rgba(199,21,21,0.5);
+        }
+
+        /* LIVE BADGE — same as home */
+        .live-badge {
+            position: absolute;
+            top: -10px; right: -16px;
+            background: linear-gradient(135deg, #ff2d2d 0%, #c71515 100%);
+            color: #fff;
+            font-size: 0.5rem;
+            font-weight: 900;
+            padding: 3px 6px 3px 5px;
+            border-radius: 20px;
+            letter-spacing: 0.6px;
+            line-height: 1;
+            text-transform: uppercase;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 2px 8px rgba(199,21,21,0.6);
+            animation: livePulse 1.6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        .live-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #fff;
+            border-radius: 50%;
+            animation: liveDot 1.2s ease-in-out infinite;
+            box-shadow: 0 0 6px rgba(255,255,255,0.9);
+        }
+
+        .live-burst {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            width: 1px;
+            height: 1px;
+            pointer-events: none;
+            z-index: 4;
+        }
+        .live-burst span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            font-size: 13px;
+            line-height: 1;
+            opacity: 0;
+            transform: translate(-50%, 0);
+            animation: emojiFloatUp 2.6s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+            filter: drop-shadow(0 1px 3px rgba(0,0,0,0.55));
+            will-change: transform, opacity;
+        }
+        .live-burst span:nth-child(1) { animation-delay: 0s;   --tx: -14px; --tz: 1.05; }
+        .live-burst span:nth-child(2) { animation-delay: 0.33s; --tx:  10px; --tz: 0.95; }
+        .live-burst span:nth-child(3) { animation-delay: 0.66s; --tx: -6px;  --tz: 1.10; }
+        .live-burst span:nth-child(4) { animation-delay: 0.99s; --tx:  16px; --tz: 1.00; }
+        .live-burst span:nth-child(5) { animation-delay: 1.32s; --tx: -12px; --tz: 0.92; }
+        .live-burst span:nth-child(6) { animation-delay: 1.65s; --tx:   8px; --tz: 1.08; }
+        .live-burst span:nth-child(7) { animation-delay: 1.98s; --tx: -18px; --tz: 0.98; }
+        .live-burst span:nth-child(8) { animation-delay: 2.31s; --tx:  14px; --tz: 1.03; }
+
+        @keyframes emojiFloatUp {
+            0%   { opacity: 0; transform: translate(-50%, 0) scale(0.3); }
+            12%  { opacity: 1; transform: translate(-50%, -6px) scale(var(--tz, 1)); }
+            70%  { opacity: 0.9; }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--tx, 0px)), -62px) scale(calc(var(--tz, 1) * 0.85)); }
+        }
+        @keyframes livePulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 0 rgba(199,21,21,0.6); }
+            50% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 6px rgba(199,21,21,0); }
+        }
+        @keyframes liveDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        /* Entrance animations */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) forwards;
+        }
+        .fade-up.delay-1 { animation-delay: 0.1s; }
+        .fade-up.delay-2 { animation-delay: 0.2s; }
+        .fade-up.delay-3 { animation-delay: 0.3s; }
+        .fade-up.delay-4 { animation-delay: 0.4s; }
+        .fade-up.delay-5 { animation-delay: 0.5s; }
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 380px) {
+            .coming-title { font-size: 1.6rem; }
+            .countdown-cell { min-width: 56px; padding: 10px 6px; }
+            .countdown-num { font-size: 1.2rem; }
+            .broadcast-icon { width: 110px; height: 110px; }
+            .broadcast-core { width: 86px; height: 86px; }
+            .broadcast-core svg { width: 38px; height: 38px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header" id="mainHeader">
+        <div class="container header-row">
+            <div class="logo">
+                <img src="images/logo-akimark.png" onerror="this.onerror=null; this.src='images/logo-akimark.jpg';" alt="Akimark">
+            </div>
+            <div class="header-actions">
+                <button class="header-icon-btn" aria-label="Search" onclick="window.location.href='home.html'">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+                <a href="notifications.html" class="header-icon-btn" aria-label="Notifications">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- COMING SOON CONTENT -->
+    <main class="coming-soon-page">
+        <div class="coming-soon-content">
+
+            <!-- LIVE top badge -->
+            <div class="live-top-badge fade-up delay-1">Live</div>
+
+            <!-- Broadcast icon with pulsing rings -->
+            <div class="broadcast-icon fade-up delay-2">
+                <div class="broadcast-ring"></div>
+                <div class="broadcast-ring"></div>
+                <div class="broadcast-ring"></div>
+                <div class="signal-waves">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div class="broadcast-core">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                        <polyline points="17 2 12 7 7 2"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Title -->
+            <h1 class="coming-title fade-up delay-3">
+                Live Stream<br><span class="accent">Coming Soon!</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="coming-subtitle fade-up delay-3">
+                We're preparing something <strong>special</strong>. Live matches, events and exclusive streams will be available <strong>very soon</strong> on Akimark.
+            </p>
+
+            <!-- Countdown -->
+            <div class="countdown fade-up delay-4" id="countdown">
+                <div class="countdown-cell">
+                    <span class="countdown-num" id="cd-days">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-cell">
+                    <span class="countdown-num" id="cd-hours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-cell">
+                    <span class="countdown-num" id="cd-minutes">00</span>
+                    <span class="countdown-label">Min</span>
+                </div>
+                <div class="countdown-cell">
+                    <span class="countdown-num" id="cd-seconds">00</span>
+                    <span class="countdown-label">Sec</span>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="coming-actions fade-up delay-5">
+                <button class="btn-notify" id="notifyBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span id="notifyText">Notify Me</span>
+                </button>
+                <a href="home.html" class="btn-back-home">
+                    <svg viewBox="0 0 24 24">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    Back to Movies
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- BOTTOM NAV (same as home) -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="home.html" id="navMovies">
+            <img src="images/akimark-movies.svg" alt="Movies">
+            <span>Movies</span>
+        </a>
+        <a href="live.html" class="active" id="navLive">
+            <div class="nav-icon-wrapper">
+                <img src="images/akimark-live.svg" alt="Live">
+                <span class="live-badge">LIVE</span>
+                <span class="live-burst" aria-hidden="true">
+                    <span>😍</span>
+                    <span>🔥</span>
+                    <span>❤️</span>
+                    <span>💬</span>
+                    <span>😮</span>
+                    <span>👏</span>
+                    <span>✨</span>
+                    <span>🎉</span>
+                </span>
+            </div>
+            <span>Live</span>
+        </a>
+        <a href="my-movies.html">
+            <div class="nav-icon-wrapper">
+                <img src="images/my-films.svg" alt="My Movies">
+            </div>
+            <span>My Movies</span>
+        </a>
+        <a href="account.html">
+            <img src="images/akimark-account.svg" alt="My Account">
+            <span>My Account</span>
+        </a>
+    </nav>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span id="toastMsg">You'll be notified!</span>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ════════════════════════════════════════════════════════════
+            // COUNTDOWN — targets next 7 days (auto-updating)
+            //   You can change LAUNCH_DATE to a fixed date if you want.
+            // ════════════════════════════════════════════════════════════
+            // Set launch date — 7 days from first page load, saved once.
+            // Feel free to change this to a fixed ISO string:
+            // e.g. new Date('2026-12-31T00:00:00Z')
+            var LAUNCH_KEY = 'akmark_live_launch_at';
+            var launchAt = localStorage.getItem(LAUNCH_KEY);
+            if (!launchAt) {
+                launchAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days from now
+                localStorage.setItem(LAUNCH_KEY, launchAt);
+            } else {
+                launchAt = parseInt(launchAt, 10);
+                // If already passed, add another 7 days (so countdown continues)
+                if (launchAt < Date.now()) {
+                    launchAt = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(LAUNCH_KEY, launchAt);
+                }
+            }
+
+            var cdDays = document.getElementById('cd-days');
+            var cdHours = document.getElementById('cd-hours');
+            var cdMinutes = document.getElementById('cd-minutes');
+            var cdSeconds = document.getElementById('cd-seconds');
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function tick() {
+                var diff = launchAt - Date.now();
+                if (diff < 0) diff = 0;
+
+                var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                cdDays.textContent = pad(days);
+                cdHours.textContent = pad(hours);
+                cdMinutes.textContent = pad(minutes);
+                cdSeconds.textContent = pad(seconds);
+            }
+            tick();
+            setInterval(tick, 1000);
+
+            // ════════════════════════════════════════════════════════════
+            // NOTIFY ME button
+            // ════════════════════════════════════════════════════════════
+            var notifyBtn = document.getElementById('notifyBtn');
+            var notifyText = document.getElementById('notifyText');
+            var NOTIFY_KEY = 'akmark_live_notify';
+
+            function updateNotifyState() {
+                if (localStorage.getItem(NOTIFY_KEY) === '1') {
+                    notifyBtn.classList.add('subscribed');
+                    notifyText.textContent = "You're Notified";
+                }
+            }
+            updateNotifyState();
+
+            notifyBtn.addEventListener('click', function() {
+                var already = localStorage.getItem(NOTIFY_KEY) === '1';
+                if (already) {
+                    localStorage.removeItem(NOTIFY_KEY);
+                    notifyBtn.classList.remove('subscribed');
+                    notifyText.textContent = 'Notify Me';
+                    showToast("Notification turned off");
+                } else {
+                    localStorage.setItem(NOTIFY_KEY, '1');
+                    notifyBtn.classList.add('subscribed');
+                    notifyText.textContent = "You're Notified";
+                    showToast("You'll be notified when Live starts!");
+                }
+            });
+
+            // ════════════════════════════════════════════════════════════
+            // TOAST
+            // ════════════════════════════════════════════════════════════
+            var toast = document.getElementById('toast');
+            var toastMsg = document.getElementById('toastMsg');
+            var toastTimer = null;
+            function showToast(msg) {
+                toastMsg.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 2600);
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // HEADER SCROLL EFFECTS (hide on scroll down, show on scroll up)
+            // ════════════════════════════════════════════════════════════
+            var header = document.getElementById('mainHeader');
+            var lastScrollY = 0;
+            var ticking = false;
+            var HIDE_AFTER = 100;
+            var isHidden = false;
+
+            function updateScroll() {
+                var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+                var delta = y - lastScrollY;
+
+                if (header) {
+                    if (y > 10) header.classList.add('scrolled');
+                    else header.classList.remove('scrolled');
+                }
+
+                if (Math.abs(delta) < 4) { ticking = false; return; }
+
+                if (y < HIDE_AFTER) {
+                    if (isHidden) {
+                        header.classList.remove('hidden');
+                        isHidden = false;
+                    }
+                } else if (delta > 6 && !isHidden) {
+                    header.classList.add('hidden');
+                    isHidden = true;
+                } else if (delta < -6 && isHidden) {
+                    header.classList.remove('hidden');
+                    isHidden = false;
+                }
+
+                lastScrollY = y < 0 ? 0 : y;
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            // ════════════════════════════════════════════════════════════
+            // SECURITY (right-click block)
+            // ════════════════════════════════════════════════════════════
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        })();
+    </script>
+</body>
+</html>
