@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#080808">
+    <title>Wallet Viewer — Akimark</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg: #0a0a0a;
+            --bg-surface: #151515;
+            --bg-secondary: #1c1c1c;
+            --accent: #c71515;
+            --accent-soft: #a00f0f;
+            --ok: #22c55e;
+            --warn: #f0ad4e;
+            --text-muted: #a7a7a7;
+            --border: rgba(255,255,255,0.06);
+            --radius: 12px;
+        }
+        html, body { scrollbar-width: none; -ms-overflow-style: none; }
+        html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { display: none !important; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg); color: #fff; min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 40px;
+        }
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; outline: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 14px; }
+
+        /* HEADER */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8,8,8,0.95);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            padding: 14px 0; border-bottom: 1px solid var(--border);
+        }
+        .header .container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo-mark {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1rem; color: #fff;
+            box-shadow: 0 4px 14px rgba(199,21,21,0.4);
+        }
+        .logo-text { font-size: 1rem; font-weight: 800; }
+        .logo-text .sub { display: block; font-size: 0.6rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+        .logo-text .accent { color: var(--accent); }
+
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; background: var(--bg-secondary); border-radius: 20px;
+            font-size: 0.7rem; font-weight: 700;
+        }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #444; }
+        .status-pill.ok .status-dot { background: var(--ok); box-shadow: 0 0 8px rgba(34,197,94,0.7); }
+        .status-pill.ok { color: var(--ok); }
+        .status-pill.error .status-dot { background: var(--accent); box-shadow: 0 0 8px rgba(199,21,21,0.7); }
+        .status-pill.error { color: var(--accent); }
+        .status-pill.checking .status-dot { background: var(--warn); animation: pulse 1.2s infinite; }
+        .status-pill.checking { color: var(--warn); }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px; margin: 20px 0;
+        }
+        .stat-card {
+            background: var(--bg-surface); border-radius: var(--radius);
+            padding: 16px; border: 1px solid var(--border);
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 2px; background: linear-gradient(90deg, var(--accent), transparent);
+        }
+        .stat-label {
+            font-size: 0.65rem; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            font-weight: 700; margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 1.4rem; font-weight: 800; color: #fff;
+            line-height: 1.1;
+        }
+        .stat-value.accent { color: var(--accent); }
+        .stat-value.ok { color: var(--ok); }
+        .stat-value.warn { color: var(--warn); }
+        .stat-sub { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+
+        /* TOOLBAR */
+        .toolbar {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 12px;
+            margin-bottom: 14px;
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+        }
+        .search-bar {
+            flex: 1; min-width: 200px;
+            display: flex; align-items: center; gap: 8px;
+            background: var(--bg-secondary); border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .search-bar svg { width: 16px; height: 16px; stroke: var(--text-muted); fill: none; stroke-width: 2; flex-shrink: 0; }
+        .search-bar input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: #fff; font-size: 0.85rem; min-width: 0;
+        }
+        .search-bar input::placeholder { color: #555; }
+
+        .btn {
+            padding: 10px 16px; border-radius: 10px;
+            font-size: 0.78rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: transform 0.2s, background 0.2s;
+            letter-spacing: 0.3px; text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(199,21,21,0.35);
+        }
+        .btn-secondary {
+            background: var(--bg-secondary); color: #fff;
+            border: 1px solid var(--border);
+        }
+        .btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* TABLE */
+        .table-wrap {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+        }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td {
+            padding: 12px 14px; text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table th {
+            background: #1a1a1a; font-size: 0.68rem;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.5px; font-weight: 700;
+            position: sticky; top: 0;
+        }
+        .data-table td { font-size: 0.82rem; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+        .id-col {
+            font-family: monospace; font-size: 0.72rem;
+            color: var(--text-muted); word-break: break-all;
+            max-width: 200px;
+        }
+        .balance-col {
+            font-weight: 800; color: var(--ok);
+            font-variant-numeric: tabular-nums;
+        }
+        .balance-col.zero { color: var(--text-muted); font-weight: 600; }
+        .balance-col.big { color: var(--accent); }
+
+        .badge-inactive {
+            display: inline-block; padding: 2px 8px; border-radius: 12px;
+            background: rgba(199,21,21,0.15); color: var(--accent);
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+        }
+
+        .loading-row td { text-align: center; padding: 30px; color: var(--text-muted); font-size: 0.85rem; }
+        .spinner {
+            display: inline-block; width: 16px; height: 16px;
+            border: 2px solid #333; border-top-color: var(--accent);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+            vertical-align: middle; margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* PAGINATION */
+        .pagination {
+            display: flex; justify-content: center; align-items: center;
+            gap: 8px; margin-top: 16px; flex-wrap: wrap;
+        }
+        .page-info {
+            font-size: 0.78rem; color: var(--text-muted);
+            font-weight: 600; padding: 0 10px;
+        }
+
+        /* EMPTY */
+        .empty {
+            padding: 60px 20px; text-align: center;
+            color: var(--text-muted); font-size: 0.85rem;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            padding: 14px 20px; border-radius: 12px;
+            z-index: 9999; font-size: 0.85rem; font-weight: 600;
+            max-width: calc(100% - 40px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            opacity: 0; pointer-events: none;
+            transition: transform 0.35s, opacity 0.35s;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+        .toast.success { border-left-color: var(--ok); }
+        .toast.error { border-left-color: var(--accent); }
+
+        @media (max-width: 640px) {
+            .data-table th:nth-child(2),
+            .data-table td:nth-child(2) { display: none; }
+            .id-col { max-width: 100px; font-size: 0.65rem; }
+            .stat-value { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-mark">A</div>
+                <div>
+                    <div class="logo-text">Aki<span class="accent">mark</span></div>
+                    <span class="sub">Wallet Viewer</span>
+                </div>
+            </div>
+            <div class="status-pill checking" id="statusPill">
+                <span class="status-dot"></span>
+                <span id="statusText">Checking…</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="statTotalUsers">—</div>
+                <div class="stat-sub">Registered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Balance</div>
+                <div class="stat-value accent" id="statTotalBalance">—</div>
+                <div class="stat-sub" id="statTotalBalanceSub">Sum of all wallets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Balance</div>
+                <div class="stat-value ok" id="statAvgBalance">—</div>
+                <div class="stat-sub">Per user</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Zero Balance</div>
+                <div class="stat-value warn" id="statZeroBalance">—</div>
+                <div class="stat-sub">Empty wallets</div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div class="search-bar">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="searchInput" placeholder="Search by name or phone…">
+            </div>
+            <button class="btn btn-primary" id="refreshBtn">
+                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Refresh
+            </button>
+            <button class="btn btn-secondary" id="topBtn">
+                <svg viewBox="0 0 24 24"><polyline points="12 2 15 9 22 9 17 14 19 22 12 18 5 22 7 14 2 9 9 9 12 2"/></svg>
+                Top
+            </button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>User ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th style="text-align:right;">Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading users…</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination" id="pagination"></div>
+
+    </div>
+
+    <div class="toast" id="toast"><span id="toastMsg">Message</span></div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ════════════════════════════════════════════════════════════
+        // CONFIG
+        // ════════════════════════════════════════════════════════════
+        const SUPABASE_URL = window.SUPABASE_URL || 'https://jnqwvmxuieeelvukhcsq.supabase.co';
+        const ENDPOINT = SUPABASE_URL + '/functions/v1/wallet-api';
+
+        const PAGE_SIZE = 100;
+
+        // ════════════════════════════════════════════════════════════
+        // STATE
+        // ════════════════════════════════════════════════════════════
+        let currentPage = 1;
+        let currentSearch = '';
+        let totalPages = 1;
+        let totalUsers = 0;
+
+        // ════════════════════════════════════════════════════════════
+        // DOM
+        // ════════════════════════════════════════════════════════════
+        const $ = (id) => document.getElementById(id);
+        const statusPill = $('statusPill');
+        const statusText = $('statusText');
+        const statTotalUsers = $('statTotalUsers');
+        const statTotalBalance = $('statTotalBalance');
+        const statAvgBalance = $('statAvgBalance');
+        const statZeroBalance = $('statZeroBalance');
+        const searchInput = $('searchInput');
+        const refreshBtn = $('refreshBtn');
+        const topBtn = $('topBtn');
+        const tableBody = $('tableBody');
+        const pagination = $('pagination');
+
+        // ════════════════════════════════════════════════════════════
+        // HELPERS
+        // ════════════════════════════════════════════════════════════
+        function formatMoney(n) {
+            var num = Number(n || 0);
+            return 'MK ' + num.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            });
+        }
+
+        function formatMoneyShort(n) {
+            var num = Number(n || 0);
+            if (num >= 1e9) return 'MK ' + (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return 'MK ' + (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return 'MK ' + (num / 1e3).toFixed(2) + 'K';
+            return 'MK ' + num.toFixed(2);
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/[&<>"']/g, function(c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function showToast(message, type) {
+            var toast = $('toast');
+            var msg = $('toastMsg');
+            toast.className = 'toast show ' + (type || 'success');
+            msg.textContent = message;
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 3000);
+        }
+
+        function setStatus(state, text) {
+            statusPill.className = 'status-pill ' + state;
+            statusText.textContent = text;
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // HEALTH CHECK
+        // ════════════════════════════════════════════════════════════
+        async function checkHealth() {
+            setStatus('checking', 'Checking…');
+            try {
+                const res = await fetch(ENDPOINT + '?action=health');
+                const data = await res.json();
+                setStatus(data.ok ? 'ok' : 'error', data.ok ? 'Online' : 'Offline');
+            } catch (err) {
+                setStatus('error', 'Unreachable');
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // LOAD STATS
+        // ════════════════════════════════════════════════════════════
+        async function loadStats() {
+            try {
+                const res = await fetch(ENDPOINT + '?action=stats');
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                statTotalUsers.textContent = (data.stats.total_users || 0).toLocaleString();
+                statTotalBalance.textContent = formatMoneyShort(data.stats.total_balance);
+                statTotalBalance.title = formatMoney(data.stats.total_balance);
+
+                const avg = data.stats.total_users > 0
+                    ? data.stats.total_balance / data.stats.total_users
+                    : 0;
+                statAvgBalance.textContent = formatMoneyShort(avg);
+
+                console.log('📊 Stats loaded:', data.stats);
+            } catch (err) {
+                console.error('Stats error:', err);
+                statTotalUsers.textContent = '—';
+                statTotalBalance.textContent = '—';
+                statAvgBalance.textContent = '—';
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // LOAD ZERO BALANCE COUNT
+        // ════════════════════════════════════════════════════════════
+        async function loadZeroCount() {
+            try {
+                const res = await fetch(ENDPOINT + '?action=zero');
+                const data = await res.json();
+                if (data.success) {
+                    statZeroBalance.textContent = (data.count || 0).toLocaleString();
+                }
+            } catch (err) {
+                statZeroBalance.textContent = '—';
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // LOAD USERS (paginated)
+        // ════════════════════════════════════════════════════════════
+        async function loadUsers(page, search) {
+            tableBody.innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading…</td></tr>';
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'list',
+                    page: String(page || 1),
+                    page_size: String(PAGE_SIZE),
+                });
+                if (search) params.set('search', search);
+
+                const res = await fetch(ENDPOINT + '?' + params.toString());
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Failed');
+
+                totalUsers = data.total || 0;
+                totalPages = data.total_pages || 1;
+                currentPage = data.page || 1;
+
+                renderTable(data.users || []);
+                renderPagination(currentPage, totalPages, totalUsers);
+
+                console.log(
+                    `📋 Loaded page ${currentPage}/${totalPages} — ${data.users.length} of ${totalUsers} users (page total: ${formatMoney(data.page_total_balance)})`,
+                );
+            } catch (err) {
+                console.error('Load error:', err);
+                tableBody.innerHTML = '<tr class="loading-row" style="color:#ff4d4d;">❌ Failed to load: ' + escapeHtml(err.message) + '</td></tr>';
+                showToast('Failed to load: ' + err.message, 'error');
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // RENDER TABLE
+        // ════════════════════════════════════════════════════════════
+        function renderTable(users) {
+            if (!users || users.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty">No users found</td></tr>';
+                return;
+            }
+
+            const offset = (currentPage - 1) * PAGE_SIZE;
+
+            tableBody.innerHTML = users.map(function(u, idx) {
+                const bal = Number(u.wallet_balance || 0);
+                let balClass = 'balance-col';
+                if (bal === 0) balClass += ' zero';
+                else if (bal >= 10000) balClass += ' big';
+
+                const inactive = u.is_deactivated === true
+                    ? ' <span class="badge-inactive">Inactive</span>'
+                    : '';
+
+                return '<tr>' +
+                    '<td style="color:#666;font-weight:700;">' + (offset + idx + 1) + '</td>' +
+                    '<td><span class="id-col">' + escapeHtml(u.user_id) + '</span></td>' +
+                    '<td>' + escapeHtml(u.full_name || '—') + inactive + '</td>' +
+                    '<td>' + escapeHtml(u.phone || '—') + '</td>' +
+                    '<td style="text-align:right;"><span class="' + balClass + '">' + formatMoney(bal) + '</span></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // RENDER PAGINATION
+        // ════════════════════════════════════════════════════════════
+        function renderPagination(page, total, totalCount) {
+            if (total <= 1) {
+                pagination.innerHTML = '<div class="page-info">' +
+                    totalCount.toLocaleString() + ' users</div>';
+                return;
+            }
+
+            var html = '';
+
+            html += '<button class="btn btn-secondary" ' + (page <= 1 ? 'disabled' : '') +
+                ' onclick="window._walletGoTo(1)">« First</button>';
+
+            html += '<button class="btn btn-secondary" ' + (page <= 1 ? 'disabled' : '') +
+                ' onclick="window._walletGoTo(' + (page - 1) + ')">‹ Prev</button>';
+
+            html += '<div class="page-info">Page ' + page + ' of ' + total +
+                ' (' + totalCount.toLocaleString() + ' users)</div>';
+
+            html += '<button class="btn btn-secondary" ' + (page >= total ? 'disabled' : '') +
+                ' onclick="window._walletGoTo(' + (page + 1) + ')">Next ›</button>';
+
+            html += '<button class="btn btn-secondary" ' + (page >= total ? 'disabled' : '') +
+                ' onclick="window._walletGoTo(' + total + ')">Last »</button>';
+
+            pagination.innerHTML = html;
+        }
+
+        // Global navigation
+        window._walletGoTo = function(p) {
+            if (p < 1 || p > totalPages) return;
+            loadUsers(p, currentSearch);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // ════════════════════════════════════════════════════════════
+        // TOP USERS (by balance)
+        // ════════════════════════════════════════════════════════════
+        async function loadTopUsers() {
+            tableBody.innerHTML = '<tr class="loading-row"><td colspan="5"><span class="spinner"></span>Loading top users…</td></tr>';
+            pagination.innerHTML = '';
+
+            try {
+                const res = await fetch(ENDPOINT + '?action=top&limit=50');
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                renderTable(data.users || []);
+                pagination.innerHTML = '<div class="page-info">🏆 Top ' + (data.count || 0) + ' richest users</div>';
+                showToast('Showing top ' + data.count + ' users', 'success');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // SEARCH (debounced)
+        // ════════════════════════════════════════════════════════════
+        var searchTimer = null;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(function() {
+                currentSearch = searchInput.value.trim();
+                loadUsers(1, currentSearch);
+            }, 400);
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // REFRESH
+        // ════════════════════════════════════════════════════════════
+        refreshBtn.addEventListener('click', function() {
+            loadStats();
+            loadZeroCount();
+            loadUsers(1, currentSearch);
+        });
+
+        topBtn.addEventListener('click', loadTopUsers);
+
+        // ════════════════════════════════════════════════════════════
+        // INIT
+        // ════════════════════════════════════════════════════════════
+        async function init() {
+            await checkHealth();
+            await loadStats();
+            await loadZeroCount();
+            await loadUsers(1, '');
+
+            setInterval(checkHealth, 60000);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
+
+    <script src="javascript.js/supabase.js" onerror="void 0"></script>
+</body>
+</html>
