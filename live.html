@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080808">
+<title>Live | Akimark</title>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg-primary: #080808;
+  --bg-surface: #151515;
+  --bg-secondary: #1C1C1C;
+  --bg-content: #0a0a0a;
+  --accent: #c71515;
+  --accent-soft: #a00f0f;
+  --accent-glow: #ff2d2d;
+  --white: #FFFFFF;
+  --text-muted: #A7A7A7;
+  --icon-grey: #8a8a8a;
+  --border-subtle: rgba(255,255,255,0.06);
+  --radius: 8px;
+  --radius-lg: 16px;
+  --transition: 0.25s cubic-bezier(0.2,0,0,1);
+  --green: #22C55E;
+}
+html, body { overscroll-behavior-y: contain; scrollbar-width: none; -ms-overflow-style: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { display: none !important; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-content);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  user-select: none; -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; outline: none; }
+img { display: block; max-width: 100%; border: none; outline: none; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 10px; }
+
+/* ── HEADER ── */
+.header {
+  position: sticky; top: 0; z-index: 100;
+  background: #080808;
+  transition: transform 0.35s cubic-bezier(0.2,0,0,1), box-shadow 0.3s ease, background 0.3s ease;
+}
+.header.hidden { transform: translateY(-100%); }
+.header.scrolled {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.55);
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.header-row { padding: 10px 0; }
+.header .container { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.logo img { height: 36px; width: auto; object-fit: contain; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+.header-icon-btn {
+  position: relative; width: 40px; height: 40px; border-radius: 14px;
+  background: linear-gradient(145deg, #1a1a1a, #101010);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.4);
+}
+.header-icon-btn:active { transform: scale(0.94); }
+.header-icon-btn svg { width: 20px; height: 20px; stroke: var(--icon-grey); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+.header-icon-btn:hover svg { stroke: #fff; }
+.notification-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: linear-gradient(135deg, #ff2d2d, #b71010);
+  color: #fff; font-size: 0.58rem; font-weight: 800;
+  padding: 2px 5px; border-radius: 10px;
+  min-width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(199,21,21,0.5);
+}
+
+/* ── PAGE ── */
+.live-page { padding: 14px 10px 30px; }
+
+.page-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 4px 4px; }
+.page-title { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.3px; }
+.page-live-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #ff2d2d;
+  box-shadow: 0 0 12px rgba(255,45,45,0.9);
+  animation: pulseDot 1.4s ease-in-out infinite;
+}
+@keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+.page-live-count {
+  margin-left: auto;
+  background: rgba(199,21,21,0.15);
+  color: #ff5a5a;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ── LIVE GRID ── */
+.live-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 640px) { .live-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 960px) { .live-grid { grid-template-columns: repeat(3, 1fr); } }
+
+.live-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border-subtle);
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.live-card:active { transform: scale(0.98); }
+.live-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #ff2d2d, #c71515, #ff2d2d);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  z-index: 2;
+}
+@keyframes shimmer { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
+
+.live-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  overflow: hidden;
+}
+.live-thumb video, .live-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.live-thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a0505, #0a0a0a);
+}
+.live-thumb-placeholder svg {
+  width: 48px; height: 48px;
+  stroke: rgba(255,45,45,0.5);
+  fill: none; stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+.live-badge-card {
+  position: absolute;
+  top: 10px; left: 10px;
+  background: linear-gradient(135deg, #ff2d2d, #c71515);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 4px 9px 4px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.8px;
+  display: inline-flex; align-items: center; gap: 4px;
+  text-transform: uppercase;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(199,21,21,0.5);
+}
+.live-badge-card::before {
+  content: ''; width: 6px; height: 6px;
+  background: #fff; border-radius: 50%;
+  animation: pulseDot 1.2s ease-in-out infinite;
+}
+
+.live-viewers {
+  position: absolute;
+  top: 10px; right: 10px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 4px;
+  z-index: 3;
+}
+.live-viewers svg { width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 2; }
+
+.live-price {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  z-index: 3;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.live-price.free { background: rgba(34,197,94,0.95); color: #fff; }
+.live-price.paid { background: rgba(245,158,11,0.95); color: #000; }
+
+.live-info {
+  padding: 12px 14px 14px;
+}
+.live-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 6px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.live-broadcaster {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.live-broadcaster .avatar {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c71515, #ff2d2d);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.6rem; font-weight: 900;
+}
+.live-stats-row {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.7rem; color: var(--text-muted);
+}
+.live-stats-row span { display: inline-flex; align-items: center; gap: 4px; }
+.live-stats-row svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+/* ── EMPTY / LOADING ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-icon {
+  width: 90px; height: 90px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.4);
+}
+.empty-icon svg {
+  width: 44px; height: 44px;
+  stroke: var(--accent);
+  fill: none; stroke-width: 1.5;
+  stroke-linecap: round; stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(199,21,21,0.5));
+}
+.empty-state h3 { color: #fff; font-size: 1.05rem; font-weight: 800; margin-bottom: 6px; }
+.empty-state p { font-size: 0.82rem; max-width: 320px; margin: 0 auto; line-height: 1.55; }
+
+/* ── STREAM MODAL ── */
+.stream-modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.95);
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.stream-modal.open { display: flex; }
+.stream-modal-top {
+  position: sticky; top: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.85), transparent);
+  z-index: 10;
+}
+.stream-modal-close {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.stream-modal-close svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2.5; }
+.stream-modal-label {
+  background: linear-gradient(135deg, #ff2d2d, #c71515);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 5px 10px 5px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.8px;
+  display: inline-flex; align-items: center; gap: 5px;
+  text-transform: uppercase;
+}
+.stream-modal-label::before {
+  content: ''; width: 6px; height: 6px;
+  background: #fff; border-radius: 50%;
+  animation: pulseDot 1.2s ease-in-out infinite;
+}
+
+.stream-video-wrap {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  position: relative;
+}
+.stream-video-wrap video {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+.video-loader {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 12px;
+  background: #000;
+  z-index: 5;
+}
+.video-loader.hidden { display: none; }
+.spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(199,21,21,0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.video-loader-text { color: var(--text-muted); font-size: 0.8rem; font-weight: 600; }
+
+.stream-modal-body { padding: 16px; }
+
+.stream-modal-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.stream-modal-broadcaster {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.stream-modal-broadcaster .avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c71515, #ff2d2d);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.72rem; font-weight: 900;
+}
+
+.stream-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-item {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.stat-item svg { width: 18px; height: 18px; margin-bottom: 6px; }
+.stat-item .stat-val { font-size: 1.15rem; font-weight: 900; line-height: 1; }
+.stat-item .stat-lbl { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; font-weight: 700; }
+.stat-item.views svg { stroke: #60A5FA; fill: none; stroke-width: 2; }
+.stat-item.likes svg { stroke: #F472B6; fill: #F472B6; stroke-width: 0; }
+.stat-item.comments svg { stroke: #F59E0B; fill: none; stroke-width: 2; }
+
+.paid-banner {
+  background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.8rem;
+  color: #FCD34D;
+  text-align: center;
+  margin-bottom: 14px;
+  display: none;
+}
+.paid-banner.show { display: block; }
+
+.comments-section {
+  margin-top: 8px;
+}
+.comments-title {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.comment-item {
+  background: var(--bg-surface);
+  border-radius: 10px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+}
+.comment-head {
+  display: flex; justify-content: space-between; gap: 8px;
+  margin-bottom: 4px;
+}
+.comment-user { font-weight: 800; color: #ff5a5a; font-size: 0.78rem; }
+.comment-time { font-size: 0.65rem; color: var(--text-muted); }
+.comment-msg { font-size: 0.82rem; color: #fff; line-height: 1.4; word-break: break-word; }
+.comment-empty { text-align: center; color: var(--text-muted); font-size: 0.78rem; padding: 20px; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 200;
+  background: rgba(8,8,8,0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 6px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  height: calc(60px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
+}
+.bottom-nav a {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; font-size: 0.6rem; font-weight: 600;
+  color: var(--icon-grey);
+  transition: color var(--transition);
+  padding: 4px 8px; min-width: 60px;
+  position: relative; flex: 1;
+  letter-spacing: 0.3px; text-transform: uppercase;
+}
+.bottom-nav a img {
+  width: 25px; height: 25px; object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(58%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(85%);
+  transition: filter var(--transition), transform var(--transition);
+}
+.bottom-nav a.active img {
+  filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(6000%) hue-rotate(352deg) brightness(90%) contrast(95%);
+  transform: translateY(-1px);
+}
+.bottom-nav a.active { color: var(--accent); }
+.bottom-nav a:active { transform: scale(0.94); }
+.nav-icon-wrapper { position: relative; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; }
+.live-badge {
+  position: absolute; top: -10px; right: -16px;
+  background: linear-gradient(135deg, #ff2d2d 0%, #c71515 100%);
+  color: #fff; font-size: 0.5rem; font-weight: 900;
+  padding: 3px 6px 3px 5px;
+  border-radius: 20px;
+  letter-spacing: 0.6px; line-height: 1;
+  text-transform: uppercase;
+  z-index: 5;
+  display: flex; align-items: center; gap: 3px;
+  box-shadow: 0 2px 8px rgba(199,21,21,0.6);
+  animation: livePulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.live-badge::before {
+  content: ''; width: 5px; height: 5px;
+  background: #fff; border-radius: 50%;
+  animation: pulseDot 1.2s ease-in-out infinite;
+}
+.live-badge.off { display: none; }
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 0 rgba(199,21,21,0.6); }
+  50% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 6px rgba(199,21,21,0); }
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 100px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 100000;
+  background: var(--bg-surface);
+  border-radius: 10px;
+  padding: 12px 22px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.9rem; font-weight: 600;
+  max-width: 90%;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 0 1px rgba(199,21,21,0.3);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.2,0,0,1);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.toast svg { width: 18px; height: 18px; stroke: var(--accent); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+.skeleton {
+  background: linear-gradient(90deg, #151515 0%, #1f1f1f 50%, #151515 100%);
+  background-size: 200% 100%;
+  animation: skel 1.5s ease-in-out infinite;
+  border-radius: 12px;
+}
+@keyframes skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.skeleton-card { height: 220px; }
+</style>
+</head>
+<body>
+
+<header class="header" id="mainHeader">
+  <div class="container header-row">
+    <div class="logo">
+      <img src="images/logo-akimark.png" onerror="this.onerror=null;this.src='images/logo-akimark.jpg';" alt="Akimark">
+    </div>
+    <div class="header-actions">
+      <button class="header-icon-btn" aria-label="Search" onclick="window.location.href='home.html'">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <a href="notifications.html" class="header-icon-btn" aria-label="Notifications">
+        <svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notification-badge" id="notificationBadge">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="live-page">
+  <div class="page-head">
+    <span class="page-live-dot"></span>
+    <div class="page-title">Live Now</div>
+    <div class="page-live-count" id="liveCount">0</div>
+  </div>
+
+  <div class="live-grid" id="liveGrid">
+    <!-- Skeleton loaders -->
+    <div class="skeleton skeleton-card"></div>
+    <div class="skeleton skeleton-card"></div>
+  </div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <div class="empty-icon">
+      <svg viewBox="0 0 24 24">
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+        <polyline points="17 2 12 7 7 2"/>
+      </svg>
+    </div>
+    <h3>No live streams right now</h3>
+    <p>Check back soon — live matches, events and exclusive broadcasts will appear here.</p>
+  </div>
+</main>
+
+<!-- STREAM MODAL -->
+<div class="stream-modal" id="streamModal">
+  <div class="stream-modal-top">
+    <span class="stream-modal-label">Live</span>
+    <button class="stream-modal-close" id="streamClose" aria-label="Close">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <div class="stream-video-wrap">
+    <video id="streamVideo" controls autoplay playsinline muted></video>
+    <div class="video-loader" id="videoLoader">
+      <div class="spinner"></div>
+      <div class="video-loader-text">Loading stream…</div>
+    </div>
+  </div>
+
+  <div class="stream-modal-body">
+    <h2 class="stream-modal-title" id="modalTitle">—</h2>
+    <div class="stream-modal-broadcaster">
+      <div class="avatar" id="modalAvatar">A</div>
+      <span id="modalBroadcaster">—</span>
+    </div>
+
+    <div class="paid-banner" id="paidBanner">
+      Paid stream — this is a preview
+    </div>
+
+    <div class="stream-stats">
+      <div class="stat-item views">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <div class="stat-val" id="modalViews">0</div>
+        <div class="stat-lbl">Views</div>
+      </div>
+      <div class="stat-item likes">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <div class="stat-val" id="modalLikes">0</div>
+        <div class="stat-lbl">Likes</div>
+      </div>
+      <div class="stat-item comments">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <div class="stat-val" id="modalComments">0</div>
+        <div class="stat-lbl">Comments</div>
+      </div>
+    </div>
+
+    <div class="comments-section">
+      <div class="comments-title">Recent Comments</div>
+      <div class="comment-list" id="modalCommentList">
+        <div class="comment-empty">No comments yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <a href="index.html"><img src="images/akimark-movies.svg" alt="Movies"><span>Movies</span></a>
+  <a href="live.html" class="active" id="navLive">
+    <div class="nav-icon-wrapper">
+      <img src="images/akimark-live.svg" alt="Live">
+      <span class="live-badge off" id="navLiveBadge">LIVE</span>
+    </div>
+    <span>Live</span>
+  </a>
+  <a href="my-movies.html"><img src="images/my-films.svg" alt="My Movies"><span>My Movies</span></a>
+  <a href="account.html"><img src="images/akimark-account.svg" alt="My Account"><span>My Account</span></a>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">—</span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script src="javascript.js/supabase.js"></script>
+<script src="live.js?v=20261001-1"></script>
+
+<script>
+(function() {
+  // Header scroll effects
+  var header = document.getElementById('mainHeader');
+  var lastScrollY = 0, ticking = false, HIDE_AFTER = 100, isHidden = false;
+  function updateScroll() {
+    var y = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var delta = y - lastScrollY;
+    if (header) {
+      if (y > 10) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    }
+    if (Math.abs(delta) < 4) { ticking = false; return; }
+    if (y < HIDE_AFTER) {
+      if (isHidden) { header.classList.remove('hidden'); isHidden = false; }
+    } else if (delta > 6 && !isHidden) {
+      header.classList.add('hidden'); isHidden = true;
+    } else if (delta < -6 && isHidden) {
+      header.classList.remove('hidden'); isHidden = false;
+    }
+    lastScrollY = y < 0 ? 0 : y;
+    ticking = false;
+  }
+  window.addEventListener('scroll', function() {
+    if (!ticking) { window.requestAnimationFrame(updateScroll); ticking = true; }
+  }, { passive: true });
+  document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+})();
+</script>
+</body>
+</html>
