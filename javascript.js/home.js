@@ -511,7 +511,7 @@
         function showBanner() {
             if (isAnimating) return;
             isAnimating = true;
-            banner.classList.add('visible');
+            banner.classList.add('hide');
             banner.style.maxHeight = '0px';
             banner.style.opacity = '0';
             banner.style.transition = 'max-height 0.45s cubic-bezier(0.2,0,0,1), opacity 0.35s ease';
@@ -538,7 +538,7 @@
                 banner.style.maxHeight = '0px';
                 banner.style.opacity = '0';
                 setTimeout(function() {
-                    banner.classList.remove('hide');
+                    banner.classList.remove('visible');
                     banner.style.maxHeight = '';
                     banner.style.opacity = '';
                     banner.style.transition = '';
