@@ -538,7 +538,7 @@
                 banner.style.maxHeight = '0px';
                 banner.style.opacity = '0';
                 setTimeout(function() {
-                    banner.classList.remove('visible');
+                    banner.classList.remove('hide');
                     banner.style.maxHeight = '';
                     banner.style.opacity = '';
                     banner.style.transition = '';
