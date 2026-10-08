@@ -356,7 +356,7 @@
                     clearInterval(pollInterval);
                     showToast('Payment Successful!', false);
                     setTimeout(() => {
-                        window.location.href = 'watch.html?id=' + (currentMovieId || movieId);
+                        window.location.href = 'index.html?id=' + (currentMovieId || movieId);
                     }, 1500);
                 } else if (verifyData.status === 'failed') {
                     clearInterval(pollInterval);
