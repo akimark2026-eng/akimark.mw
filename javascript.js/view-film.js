@@ -270,16 +270,16 @@
             } else {
                 var price = Number(filmData.price || 0);
                 watchBtnText.textContent = 'WATCH NOW MK ' + price.toLocaleString();
-                statusMessage.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> Server failed to Run';
+                statusMessage.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> You have sufficient funds';
                 statusMessage.className = 'status-message show error';
-                showToast(data.error || 'Server failed to Run', true);
+                showToast(data.error || 'You have sufficient funds', true);
             }
         })
         .catch(function(err) {
             watchBtn.classList.remove('loading');
             var price = Number(filmData.price || 0);
             watchBtnText.textContent = 'WATCH NOW MK ' + price.toLocaleString();
-            statusMessage.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> Server failed to Run';
+            statusMessage.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg> ';
             statusMessage.className = 'status-message show error';
             showToast(err.message || 'Server failed to Run', true);
         });
