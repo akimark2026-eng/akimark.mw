@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>System Under Maintenance — Akimark</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --bg: #06060a;
+            --bg-2: #0e0e16;
+            --card: #14141c;
+            --border: rgba(255,255,255,0.08);
+            --text: #f4f4f7;
+            --muted: #9a9aae;
+            --brand: #c71515;
+            --brand-2: #f43f5e;
+            --brand-glow: rgba(199,21,21,0.45);
+            --gold: #fbbf24;
+            --success: #10b981;
+            --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* ══════════ BACKGROUND SCENE ══════════ */
+        .scene {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px 48px;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(199,21,21,0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(199,21,21,0.045) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 85%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: glowPulse 6s ease-in-out infinite;
+        }
+
+        .glow-top {
+            top: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 620px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(199,21,21,0.55), transparent 65%);
+        }
+
+        .glow-bottom {
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(244,63,94,0.35), transparent 65%);
+            animation-delay: 3s;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.75; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+        }
+
+        /* ══════════ FLOATING GEARS ══════════ */
+        .floating-gears {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .gear {
+            position: absolute;
+            fill: rgba(199,21,21,0.35);
+            filter: drop-shadow(0 4px 12px rgba(199,21,21,0.4));
+            animation: gearSpin linear infinite;
+        }
+
+        .gear-1 { top: 12%; left: 8%;  width: 46px; height: 46px; animation-duration: 14s; animation-direction: normal; }
+        .gear-2 { top: 22%; right: 10%; width: 34px; height: 34px; animation-duration: 10s; animation-direction: reverse; fill: rgba(251,191,36,0.3); }
+        .gear-3 { bottom: 22%; left: 12%; width: 38px; height: 38px; animation-duration: 12s; animation-direction: reverse; }
+        .gear-4 { bottom: 15%; right: 8%; width: 52px; height: 52px; animation-duration: 16s; animation-direction: normal; fill: rgba(244,63,94,0.32); }
+        .gear-5 { top: 45%; left: 4%; width: 28px; height: 28px; animation-duration: 8s; animation-direction: normal; fill: rgba(199,21,21,0.28); }
+        .gear-6 { top: 55%; right: 5%; width: 30px; height: 30px; animation-duration: 11s; animation-direction: reverse; fill: rgba(251,191,36,0.25); }
+
+        @keyframes gearSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ══════════ CONTENT ══════════ */
+        .content {
+            position: relative;
+            z-index: 2;
+            max-width: 480px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            text-align: center;
+        }
+
+        /* ─── Status Pill ─── */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(199,21,21,0.12);
+            border: 1px solid rgba(199,21,21,0.35);
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #ff6b6b;
+            box-shadow: 0 4px 16px rgba(199,21,21,0.15);
+            animation: pillIn 0.6s cubic-bezier(0.2,0,0,1) both;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff3b3b;
+            box-shadow: 0 0 12px #ff3b3b;
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 12px #ff3b3b; }
+            50% { transform: scale(1.3); box-shadow: 0 0 20px #ff3b3b, 0 0 32px rgba(255,59,59,0.5); }
+        }
+
+        @keyframes pillIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ─── Mascot Stage ─── */
+        .mascot-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: mascotIn 0.9s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.1s;
+        }
+
+        .halo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199,21,21,0.35), transparent 65%);
+            filter: blur(30px);
+            z-index: 0;
+            animation: haloPulse 4s ease-in-out infinite;
+        }
+
+        .halo::after {
+            content: '';
+            position: absolute;
+            inset: 20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244,63,94,0.4), transparent 70%);
+            animation: haloPulse 3s ease-in-out infinite reverse;
+        }
+
+        @keyframes haloPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        .mascot {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6));
+            animation: mascotFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes mascotIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ─── Title ─── */
+        .title {
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -0.6px;
+            line-height: 1.15;
+            color: #fff;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.2s;
+        }
+
+        .title .accent {
+            background: linear-gradient(135deg, #ff3535, #f43f5e, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 20px rgba(244,63,94,0.5));
+        }
+
+        /* ─── Subtitle ─── */
+        .subtitle {
+            font-size: 0.94rem;
+            line-height: 1.7;
+            color: #b8b8c8;
+            max-width: 400px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.3s;
+        }
+
+        .subtitle strong { color: #fff; font-weight: 700; }
+        .subtitle .chi { color: #ffb4b4; font-weight: 700; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Info Grid ─── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 360px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.4s;
+        }
+
+        .info-card {
+            background: linear-gradient(145deg, rgba(22,22,30,0.9), rgba(14,14,22,0.9));
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 4px 12px rgba(0,0,0,0.4);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .info-card:active { transform: scale(0.97); }
+
+        .info-icon {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+            filter: drop-shadow(0 2px 6px rgba(199,21,21,0.5));
+        }
+
+        .info-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #6a6a80;
+        }
+
+        .info-value {
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value.accent {
+            background: linear-gradient(135deg, #ff3535, #f43f5e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ─── Progress ─── */
+        .progress-section {
+            width: 100%;
+            max-width: 360px;
+            background: linear-gradient(145deg, rgba(22,22,30,0.9), rgba(14,14,22,0.9));
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 24px rgba(0,0,0,0.4);
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.5s;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .progress-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #b8b8c8;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #c71515;
+            box-shadow: 0 0 10px #c71515;
+            animation: pulseDot 1.4s ease-in-out infinite;
+        }
+
+        .progress-pct {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: #ff5555;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            letter-spacing: 0.5px;
+            min-width: 42px;
+            text-align: right;
+            transition: color 0.3s ease;
+        }
+
+        .progress-pct.done { color: var(--success); }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c71515, #f43f5e, #ff6b6b);
+            border-radius: 999px;
+            transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 16px rgba(244,63,94,0.6);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: fillShimmer 1.6s infinite;
+        }
+
+        @keyframes fillShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-hint {
+            font-size: 0.72rem;
+            color: #7a7a90;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-align: left;
+            min-height: 16px;
+        }
+
+        .progress-hint::after {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            animation: dots 1.4s steps(4) infinite;
+        }
+
+        @keyframes dots {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+
+        /* ─── Refresh Button ─── */
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 13px 28px;
+            background: linear-gradient(135deg, #c71515, #f43f5e);
+            color: #fff;
+            font-size: 0.88rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 10px 28px rgba(199,21,21,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both, btnPulse 2.6s ease-in-out infinite;
+            animation-delay: 0.6s, 1.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+            animation: btnShine 3s ease-in-out infinite;
+        }
+
+        .refresh-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(199,21,21,0.55); }
+        .refresh-btn:active { transform: translateY(0) scale(0.97); }
+
+        .refresh-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #fff;
+            transition: transform 0.6s cubic-bezier(0.4,0,0.2,1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .refresh-btn.spin svg { transform: rotate(360deg); }
+
+        .refresh-btn span { position: relative; z-index: 1; }
+
+        @keyframes btnShine {
+            0% { left: -100%; }
+            60%, 100% { left: 100%; }
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { box-shadow: 0 10px 28px rgba(199,21,21,0.4); }
+            50% { box-shadow: 0 10px 28px rgba(199,21,21,0.4), 0 0 0 8px rgba(199,21,21,0.08); }
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #4a4a5a;
+            margin-top: 4px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.7s;
+        }
+
+        .footer strong { color: #7a7a8a; font-weight: 800; letter-spacing: 1.4px; }
+        .footer .heart { color: #ff3b3b; display: inline-block; animation: heartBeat 1.4s ease-in-out infinite; }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+
+        /* ─── Social Bar ─── */
+        .social-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: -4px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.65s;
+        }
+
+        .social-bar a {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .social-bar a:active { transform: scale(0.92); }
+        .social-bar a:hover {
+            background: rgba(199,21,21,0.15);
+            border-color: rgba(199,21,21,0.4);
+        }
+
+        .social-bar svg {
+            width: 18px;
+            height: 18px;
+            fill: #b8b8c8;
+            transition: fill 0.2s ease;
+        }
+
+        .social-bar a:hover svg { fill: #ff6b6b; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 420px) {
+            .scene { padding: 24px 16px 40px; }
+            .title { font-size: 1.6rem; }
+            .subtitle { font-size: 0.88rem; }
+            .mascot-wrap { max-width: 280px; }
+            .halo { width: 260px; height: 260px; }
+            .info-grid { max-width: 320px; }
+            .progress-section { max-width: 320px; padding: 14px; }
+        }
+
+        @media (max-width: 360px) {
+            .title { font-size: 1.4rem; }
+            .mascot-wrap { max-width: 240px; }
+            .info-card { padding: 12px 10px; }
+            .info-value { font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+
+        <!-- Background layers -->
+        <div class="bg-grid" aria-hidden="true"></div>
+        <div class="glow glow-top" aria-hidden="true"></div>
+        <div class="glow glow-bottom" aria-hidden="true"></div>
+
+        <!-- Floating animated gears -->
+        <div class="floating-gears" aria-hidden="true">
+            <svg class="gear gear-1" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-2" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-3" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-4" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-5" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-6" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+        </div>
+
+        <!-- ══════════ MAIN CONTENT ══════════ -->
+        <div class="content">
+
+            <!-- Status Pill -->
+            <div class="status-pill">
+                <span class="pulse-dot"></span>
+                <span>Live Maintenance</span>
+            </div>
+
+            <!-- ══════════ 3D MASCOT ══════════ -->
+            <div class="mascot-wrap">
+                <div class="halo" aria-hidden="true"></div>
+
+                <svg class="mascot" viewBox="0 0 360 500" xmlns="http://www.w3.org/2000/svg" aria-label="Akimark Maintenance Mascot">
+                    <defs>
+                        <!-- Skin -->
+                        <radialGradient id="skinG" cx="35%" cy="28%" r="75%">
+                            <stop offset="0%" stop-color="#ffdcb5"/>
+                            <stop offset="55%" stop-color="#f0b380"/>
+                            <stop offset="100%" stop-color="#b88454"/>
+                        </radialGradient>
+
+                        <!-- Red shirt 3D -->
+                        <linearGradient id="shirtG" x1="15%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff3838"/>
+                            <stop offset="35%" stop-color="#e51212"/>
+                            <stop offset="75%" stop-color="#b00808"/>
+                            <stop offset="100%" stop-color="#7a0303"/>
+                        </linearGradient>
+
+                        <!-- Shirt highlight layer -->
+                        <radialGradient id="shirtHiG" cx="32%" cy="18%" r="55%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.45)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
+
+                        <!-- Shirt shadow (bottom) -->
+                        <linearGradient id="shirtShadowG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
+                            <stop offset="100%" stop-color="rgba(0,0,0,0.4)"/>
+                        </linearGradient>
+
+                        <!-- Hat yellow 3D -->
+                        <linearGradient id="hatG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#ffe680"/>
+                            <stop offset="45%" stop-color="#f5b800"/>
+                            <stop offset="100%" stop-color="#8a6000"/>
+                        </linearGradient>
+
+                        <radialGradient id="hatHiG" cx="30%" cy="20%" r="50%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.6)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
+
+                        <!-- Pants -->
+                        <linearGradient id="pantsG" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3d4d70"/>
+                            <stop offset="100%" stop-color="#141c30"/>
+                        </linearGradient>
+
+                        <!-- Boots -->
+                        <linearGradient id="bootG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#5a4028"/>
+                            <stop offset="100%" stop-color="#1a0f05"/>
+                        </linearGradient>
+
+                        <!-- Metal wrench -->
+                        <linearGradient id="metalG" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f5f5fa"/>
+                            <stop offset="40%" stop-color="#a8a8b0"/>
+                            <stop offset="75%" stop-color="#68687a"/>
+                            <stop offset="100%" stop-color="#3a3a48"/>
+                        </linearGradient>
+
+                        <linearGradient id="metalShineG" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0)"/>
+                            <stop offset="50%" stop-color="rgba(255,255,255,0.7)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </linearGradient>
+
+                        <!-- Text shadow filter -->
+                        <filter id="txtShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/>
+                            <feOffset dx="0" dy="1.5"/>
+                            <feComponentTransfer><feFuncA type="linear" slope="0.7"/></feComponentTransfer>
+                            <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+
+                        <!-- Ground shadow blur -->
+                        <filter id="groundBlur" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="6"/>
+                        </filter>
+                    </defs>
+
+                    <!-- Ground shadow -->
+                    <ellipse cx="180" cy="470" rx="120" ry="20" fill="rgba(0,0,0,0.55)" filter="url(#groundBlur)"/>
+
+                    <!-- ═══ LEGS / PANTS ═══ -->
+                    <path d="M 142 330 L 140 425 Q 138 442 152 444 L 172 444 Q 182 444 182 434 L 182 330 Z"
+                          fill="url(#pantsG)"/>
+                    <path d="M 178 330 L 178 434 Q 178 444 188 444 L 214 444 Q 228 442 226 425 L 222 330 Z"
+                          fill="url(#pantsG)"/>
+                    <!-- Pant knee highlight -->
+                    <ellipse cx="158" cy="380" rx="12" ry="6" fill="rgba(255,255,255,0.08)"/>
+                    <ellipse cx="200" cy="380" rx="12" ry="6" fill="rgba(255,255,255,0.08)"/>
+
+                    <!-- ═══ BOOTS ═══ -->
+                    <path d="M 132 424 Q 132 452 155 452 L 182 452 Q 192 452 192 442 L 192 418 L 132 418 Z"
+                          fill="url(#bootG)"/>
+                    <path d="M 178 424 Q 178 452 200 452 L 232 452 Q 244 452 244 440 L 244 418 L 178 418 Z"
+                          fill="url(#bootG)"/>
+                    <!-- Boot soles -->
+                    <rect x="132" y="446" width="60" height="6" rx="2" fill="#0a0603"/>
+                    <rect x="178" y="446" width="66" height="6" rx="2" fill="#0a0603"/>
+                    <!-- Boot highlights -->
+                    <path d="M 140 428 L 186 428" stroke="#8a6840" stroke-width="1.8" opacity="0.7" stroke-linecap="round"/>
+                    <path d="M 186 428 L 238 428" stroke="#8a6840" stroke-width="1.8" opacity="0.7" stroke-linecap="round"/>
+
+                    <!-- ═══ TORSO (RED SHIRT) ═══ -->
+                    <!-- Base shape -->
+                    <path d="M 118 218
+                             Q 100 224 100 260
+                             L 96 340
+                             Q 96 358 114 358
+                             L 246 358
+                             Q 264 358 264 340
+                             L 260 260
+                             Q 260 224 242 218
+                             Z"
+                          fill="url(#shirtG)"/>
+                    <!-- Highlight top -->
+                    <path d="M 118 218 Q 100 224 100 260 L 96 340 Q 96 358 114 358 L 246 358 Q 264 358 264 340 L 260 260 Q 260 224 242 218 Z"
+                          fill="url(#shirtHiG)"/>
+                    <!-- Shadow bottom -->
+                    <path d="M 96 320 L 96 340 Q 96 358 114 358 L 246 358 Q 264 358 264 340 L 264 320 Z"
+                          fill="url(#shirtShadowG)"/>
+                    <!-- Collar -->
+                    <path d="M 152 216 Q 180 240 208 216 L 202 202 Q 180 220 158 202 Z" fill="#8a0404"/>
+                    <path d="M 152 216 Q 180 240 208 216" stroke="#5a0202" stroke-width="1.5" fill="none"/>
+
+                    <!-- ═══ AKIMARK TEXT ON SHIRT ═══ -->
+                    <text x="180" y="288"
+                          text-anchor="middle"
+                          font-family="Inter, sans-serif"
+                          font-weight="900"
+                          font-size="24"
+                          fill="#ffffff"
+                          letter-spacing="1.5"
+                          filter="url(#txtShadow)">AKIMARK</text>
+
+                    <!-- Sub-text -->
+                    <text x="180" y="308"
+                          text-anchor="middle"
+                          font-family="Inter, sans-serif"
+                          font-weight="700"
+                          font-size="7"
+                          fill="#ffb0b0"
+                          letter-spacing="4">MAINTENANCE CREW</text>
+
+                    <!-- Shirt fold lines -->
+                    <path d="M 118 250 Q 130 270 122 320" stroke="rgba(0,0,0,0.18)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 242 250 Q 230 270 238 320" stroke="rgba(0,0,0,0.18)" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                    <!-- ═══ LEFT ARM (hand on hip) ═══ -->
+                    <path d="M 108 236
+                             Q 78 250 76 295
+                             Q 75 325 88 340
+                             Q 100 350 118 342
+                             Q 124 338 122 328
+                             Q 116 320 112 305
+                             Q 108 282 122 258
+                             L 132 236 Z"
+                          fill="url(#shirtG)"/>
+                    <!-- Left hand -->
+                    <path d="M 92 336 Q 108 350 122 340 Q 130 332 126 322 Q 114 318 104 322 Q 96 326 92 336 Z"
+                          fill="url(#skinG)"/>
+
+                    <!-- ═══ RIGHT ARM (holding wrench) ═══ -->
+                    <path d="M 252 236
+                             Q 282 250 284 290
+                             Q 285 325 270 344
+                             Q 258 356 240 350
+                             Q 234 346 236 336
+                             Q 246 328 252 308
+                             Q 258 282 248 258
+                             L 240 236 Z"
+                          fill="url(#shirtG)"/>
+                    <!-- Right hand -->
+                    <path d="M 240 340 Q 254 356 270 348 Q 280 340 274 328 Q 262 324 252 332 Q 244 336 240 340 Z"
+                          fill="url(#skinG)"/>
+
+                    <!-- ═══ WRENCH ═══ -->
+                    <g transform="rotate(-28 270 300)">
+                        <!-- Wrench body -->
+                        <rect x="266" y="240" width="10" height="90" rx="4" fill="url(#metalG)"/>
+                        <!-- Wrench shine -->
+                        <rect x="266" y="240" width="3" height="90" rx="1.5" fill="rgba(255,255,255,0.5)" opacity="0.7"/>
+                        <!-- Top head -->
+                        <path d="M 262 240 L 262 222 Q 262 216 270 216 L 276 216 Q 284 216 284 222 L 284 240 Z" fill="url(#metalG)"/>
+                        <circle cx="273" cy="228" r="4.5" fill="#1e1e28"/>
+                        <circle cx="273" cy="228" r="2" fill="#3a3a48"/>
+                        <!-- Bottom head -->
+                        <path d="M 262 330 L 258 348 Q 258 356 266 358 L 280 358 Q 288 356 288 348 L 284 330 Z" fill="url(#metalG)"/>
+                        <circle cx="273" cy="344" r="4.5" fill="#1e1e28"/>
+                        <circle cx="273" cy="344" r="2" fill="#3a3a48"/>
+                        <!-- Metal shine strip -->
+                        <rect x="266" y="240" width="10" height="90" fill="url(#metalShineG)" opacity="0.35"/>
+                    </g>
+
+                    <!-- ═══ NECK ═══ -->
+                    <path d="M 162 194 L 162 222 Q 180 232 198 222 L 198 194 Z" fill="url(#skinG)"/>
+                    <path d="M 162 200 Q 180 214 198 200" stroke="#b88858" stroke-width="1.5" fill="none" opacity="0.6"/>
+
+                    <!-- ═══ HEAD ═══ -->
+                    <circle cx="180" cy="140" r="58" fill="url(#skinG)"/>
+                    <!-- Ears -->
+                    <ellipse cx="122" cy="148" rx="9" ry="13" fill="url(#skinG)"/>
+                    <ellipse cx="238" cy="148" rx="9" ry="13" fill="url(#skinG)"/>
+                    <!-- Cheeks -->
+                    <ellipse cx="150" cy="162" rx="10" ry="7" fill="#ff9a9a" opacity="0.55"/>
+                    <ellipse cx="210" cy="162" rx="10" ry="7" fill="#ff9a9a" opacity="0.55"/>
+
+                    <!-- Eyes -->
+                    <ellipse cx="160" cy="140" rx="9.5" ry="10.5" fill="#ffffff"/>
+                    <ellipse cx="200" cy="140" rx="9.5" ry="10.5" fill="#ffffff"/>
+                    <circle cx="161" cy="142" r="5.5" fill="#14141c"/>
+                    <circle cx="201" cy="142" r="5.5" fill="#14141c"/>
+                    <circle cx="163" cy="138" r="2" fill="#ffffff"/>
+                    <circle cx="203" cy="138" r="2" fill="#ffffff"/>
+
+                    <!-- Eyebrows -->
+                    <path d="M 148 122 Q 158 115 172 122" stroke="#5a3018" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M 188 122 Q 202 115 212 122" stroke="#5a3018" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+                    <!-- Nose -->
+                    <path d="M 178 148 Q 180 155 182 148" stroke="#b88050" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                    <!-- Smile -->
+                    <path d="M 165 168 Q 180 182 195 168" stroke="#8a3010" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+                    <!-- ═══ HARD HAT ═══ -->
+                    <!-- Dome -->
+                    <path d="M 122 118 Q 118 76 145 62 Q 180 44 215 62 Q 242 76 238 118 Z" fill="url(#hatG)"/>
+                    <!-- Hat highlight -->
+                    <path d="M 122 118 Q 118 76 145 62 Q 180 44 215 62 Q 242 76 238 118 Z" fill="url(#hatHiG)" opacity="0.8"/>
+                    <!-- Brim -->
+                    <path d="M 106 118 Q 180 104 254 118 Q 256 128 240 129 L 120 129 Q 104 128 106 118 Z" fill="url(#hatG)"/>
+                    <!-- Brim highlight -->
+                    <path d="M 108 118 Q 180 106 252 118" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+                    <!-- Reflective stripe -->
+                    <path d="M 130 92 Q 180 76 230 92 L 232 100 Q 180 84 128 100 Z" fill="#ff5a00" opacity="0.9"/>
+                    <path d="M 130 92 Q 180 76 230 92" stroke="#ffb84d" stroke-width="1" fill="none" opacity="0.7"/>
+                    <!-- Hat center ridge -->
+                    <path d="M 180 52 L 180 118" stroke="#8a6000" stroke-width="2" opacity="0.55"/>
+                    <!-- Hat front badge (Akimark crest) -->
+                    <circle cx="180" cy="100" r="10" fill="#c71515" stroke="#8a0404" stroke-width="1.5"/>
+                    <circle cx="180" cy="100" r="7" fill="none" stroke="#ff8080" stroke-width="0.8" opacity="0.7"/>
+                    <text x="180" y="105" text-anchor="middle" font-family="Inter, sans-serif" font-weight="900" font-size="10" fill="#ffffff">A</text>
+                    <!-- Hat shine top -->
+                    <ellipse cx="152" cy="76" rx="16" ry="7" fill="rgba(255,255,255,0.4)"/>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h1 class="title">
+                Tikukonza <span class="accent">Makina Athu</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="subtitle">
+                Tili pakukonza <strong>makina athu</strong> kuti tikupatseni
+                ntchito yabwino komanso yotetezeka. <span class="chi">Chonde bwererani posachedwa.</span>
+                Zikomo chifukwa cha kuleza mtima kwanu.
+            </p>
+
+            <!-- Info cards -->
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">⏱️</div>
+                    <div class="info-label">Estimated Back</div>
+                    <div class="info-value accent">~ 2 Hours</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🕐</div>
+                    <div class="info-label">Malawi Time</div>
+                    <div class="info-value" id="malawiClock">--:--</div>
+                </div>
+            </div>
+
+            <!-- Progress section -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <div class="progress-label">
+                        <span class="live-dot"></span>
+                        <span>System Status</span>
+                    </div>
+                    <div class="progress-pct" id="progressPct">0%</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-hint" id="progressHint">Initializing maintenance</div>
+            </div>
+
+            <!-- Refresh button -->
+            <button class="refresh-btn" id="refreshBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M17.65 6.35A7.958 7.958 0 0012 4a8 8 0 100 16c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 110-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+                <span>Refresh Now</span>
+            </button>
+
+            <!-- Social bar -->
+            <div class="social-bar">
+                <a href="https://wa.me/" aria-label="WhatsApp" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24"><path d="M20.52 3.48A11.94 11.94 0 0012.02 0C5.4 0 .03 5.37.02 11.99c0 2.11.55 4.17 1.6 5.99L0 24l6.16-1.62A11.94 11.94 0 0012.02 24c6.62 0 11.99-5.37 11.99-11.99 0-3.2-1.25-6.21-3.49-8.53zM12.02 22a9.9 9.9 0 01-5.04-1.38l-.36-.21-3.65.96.98-3.56-.24-.37A9.9 9.9 0 012.03 12c0-5.5 4.48-9.98 9.99-9.98 5.51 0 9.99 4.48 9.99 9.98 0 5.51-4.48 9.99-9.99 9.99zm5.47-7.47c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.79-1.68-2.09-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.11 3.22 5.11 4.52.71.31 1.27.49 1.7.63.72.23 1.37.2 1.88.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"/></svg>
+                </a>
+                <a href="https://facebook.com/" aria-label="Facebook" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.69.24 2.69.24v2.97h-1.52c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+                </a>
+                <a href="mailto:support@akimark.com" aria-label="Email">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                Made with <span class="heart">♥</span> for Malawi — <strong>Akimark</strong>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ════════════════════════════════════════════════════════════
+        // MALAWI CLOCK (UTC+2)
+        // ════════════════════════════════════════════════════════════
+        function updateMalawiClock() {
+            var clockEl = document.getElementById('malawiClock');
+            if (!clockEl) return;
+            var now = new Date();
+            var malawi = new Date(now.getTime() + (now.getTimezoneOffset() * 60000) + (2 * 3600000));
+            var h = String(malawi.getHours()).padStart(2, '0');
+            var m = String(malawi.getMinutes()).padStart(2, '0');
+            var s = String(malawi.getSeconds()).padStart(2, '0');
+            clockEl.textContent = h + ':' + m + ':' + s;
+        }
+        updateMalawiClock();
+        setInterval(updateMalawiClock, 1000);
+
+        // ════════════════════════════════════════════════════════════
+        // PROGRESS BAR — Smart animated maintenance progress
+        //   Rises to ~78% then hovers, giving a realistic feel
+        // ════════════════════════════════════════════════════════════
+        var progressFill = document.getElementById('progressFill');
+        var progressPct = document.getElementById('progressPct');
+        var progressHint = document.getElementById('progressHint');
+
+        var currentPct = 0;
+        var targetPct = 78; // Realistic mid-maintenance progress
+        var hints = [
+            'Initializing maintenance',
+            'Updating core systems',
+            'Syncing databases',
+            'Rebuilding cache',
+            'Running security checks',
+            'Optimizing performance',
+            'Almost there'
+        ];
+        var hintIdx = 0;
+
+        function stepProgress() {
+            if (currentPct >= targetPct) return;
+
+            // Ease: bigger jumps at first, slower near the top
+            var remaining = targetPct - currentPct;
+            var inc = Math.max(0.6, remaining * 0.06);
+
+            currentPct = Math.min(targetPct, currentPct + inc);
+            var rounded = Math.round(currentPct);
+
+            if (progressFill) progressFill.style.width = rounded + '%';
+            if (progressPct) progressPct.textContent = rounded + '%';
+
+            // Rotate hints every ~12% progress
+            var newIdx = Math.min(hints.length - 1, Math.floor(rounded / (targetPct / hints.length)));
+            if (newIdx !== hintIdx && progressHint) {
+                hintIdx = newIdx;
+                progressHint.textContent = hints[hintIdx];
+            }
+
+            // Slow down as we approach target
+            var delay = currentPct > targetPct - 5 ? 900 : (currentPct > targetPct - 15 ? 500 : 240);
+            if (currentPct < targetPct) setTimeout(stepProgress, delay);
+        }
+
+        // Kick off after a short delay (lets initial UI settle)
+        setTimeout(stepProgress, 600);
+
+        // ════════════════════════════════════════════════════════════
+        // REFRESH BUTTON — spins, then reloads page
+        // ════════════════════════════════════════════════════════════
+        var refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                refreshBtn.classList.add('spin');
+                refreshBtn.disabled = true;
+                setTimeout(function() {
+                    window.location.reload();
+                }, 550);
+            });
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // SECURITY (consistent with rest of site)
+        // ════════════════════════════════════════════════════════════
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>
