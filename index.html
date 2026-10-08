@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#06060a">
+    <title>System Under Maintenance — Akimark</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --bg: #06060a;
+            --text: #f4f4f7;
+            --brand: #c71515;
+            --brand-2: #f43f5e;
+        }
+
+        html, body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* ══════════ BACKGROUND SCENE ══════════ */
+        .scene {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px 48px;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(199,21,21,0.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(199,21,21,0.045) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 85%);
+            -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 85%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: glowPulse 6s ease-in-out infinite;
+        }
+
+        .glow-top {
+            top: -15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 620px;
+            height: 420px;
+            background: radial-gradient(circle, rgba(199,21,21,0.55), transparent 65%);
+        }
+
+        .glow-bottom {
+            bottom: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(244,63,94,0.35), transparent 65%);
+            animation-delay: 3s;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.75; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+        }
+
+        /* ══════════ FLOATING GEARS ══════════ */
+        .floating-gears {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .gear {
+            position: absolute;
+            fill: rgba(199,21,21,0.32);
+            filter: drop-shadow(0 4px 12px rgba(199,21,21,0.35));
+            animation: gearSpin linear infinite;
+        }
+
+        .gear-1 { top: 12%; left: 8%;  width: 46px; height: 46px; animation-duration: 14s; animation-direction: normal; }
+        .gear-2 { top: 22%; right: 10%; width: 34px; height: 34px; animation-duration: 10s; animation-direction: reverse; fill: rgba(251,191,36,0.28); }
+        .gear-3 { bottom: 22%; left: 12%; width: 38px; height: 38px; animation-duration: 12s; animation-direction: reverse; }
+        .gear-4 { bottom: 15%; right: 8%; width: 52px; height: 52px; animation-duration: 16s; animation-direction: normal; fill: rgba(244,63,94,0.3); }
+        .gear-5 { top: 45%; left: 4%; width: 28px; height: 28px; animation-duration: 8s; animation-direction: normal; fill: rgba(199,21,21,0.26); }
+        .gear-6 { top: 55%; right: 5%; width: 30px; height: 30px; animation-duration: 11s; animation-direction: reverse; fill: rgba(251,191,36,0.24); }
+
+        @keyframes gearSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ══════════ CONTENT ══════════ */
+        .content {
+            position: relative;
+            z-index: 2;
+            max-width: 480px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 26px;
+            text-align: center;
+        }
+
+        /* ─── Mascot Stage ─── */
+        .mascot-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: mascotIn 1s cubic-bezier(0.2,0,0,1) both;
+        }
+
+        .halo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(199,21,21,0.4), transparent 65%);
+            filter: blur(34px);
+            z-index: 0;
+            animation: haloPulse 4s ease-in-out infinite;
+        }
+
+        .halo::after {
+            content: '';
+            position: absolute;
+            inset: 20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244,63,94,0.42), transparent 70%);
+            animation: haloPulse 3s ease-in-out infinite reverse;
+        }
+
+        @keyframes haloPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+            50% { transform: translate(-50%, -50%) scale(1.14); opacity: 1; }
+        }
+
+        .mascot {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 22px 42px rgba(0,0,0,0.65));
+            animation: mascotFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-9px); }
+        }
+
+        @keyframes mascotIn {
+            from { opacity: 0; transform: translateY(28px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ─── Title ─── */
+        .title {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.7px;
+            line-height: 1.15;
+            color: #fff;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.2s;
+        }
+
+        .title .accent {
+            background: linear-gradient(135deg, #ff3535, #f43f5e, #ff6b6b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 22px rgba(244,63,94,0.55));
+        }
+
+        /* ─── Subtitle ─── */
+        .subtitle {
+            font-size: 0.96rem;
+            line-height: 1.72;
+            color: #b8b8c8;
+            max-width: 400px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.32s;
+        }
+
+        .subtitle strong { color: #fff; font-weight: 700; }
+        .subtitle .chi { color: #ffb4b4; font-weight: 700; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ─── Footer ─── */
+        .footer {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #4a4a5a;
+            margin-top: 6px;
+            animation: fadeUp 0.7s cubic-bezier(0.2,0,0,1) both;
+            animation-delay: 0.5s;
+        }
+
+        .footer strong { color: #7a7a8a; font-weight: 800; letter-spacing: 1.4px; }
+        .footer .heart { color: #ff3b3b; display: inline-block; animation: heartBeat 1.4s ease-in-out infinite; }
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 420px) {
+            .scene { padding: 32px 16px 40px; }
+            .title { font-size: 1.7rem; }
+            .subtitle { font-size: 0.9rem; }
+            .mascot-wrap { max-width: 290px; }
+            .halo { width: 280px; height: 280px; }
+        }
+
+        @media (max-width: 360px) {
+            .title { font-size: 1.48rem; }
+            .mascot-wrap { max-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+
+        <!-- Background layers -->
+        <div class="bg-grid" aria-hidden="true"></div>
+        <div class="glow glow-top" aria-hidden="true"></div>
+        <div class="glow glow-bottom" aria-hidden="true"></div>
+
+        <!-- Floating animated gears -->
+        <div class="floating-gears" aria-hidden="true">
+            <svg class="gear gear-1" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-2" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-3" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-4" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-5" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+            <svg class="gear gear-6" viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+        </div>
+
+        <!-- ══════════ MAIN CONTENT ══════════ -->
+        <div class="content">
+
+            <!-- ══════════ 3D CARTOON MASCOT ══════════ -->
+            <div class="mascot-wrap">
+                <div class="halo" aria-hidden="true"></div>
+
+                <svg class="mascot" viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg" aria-label="Akimark Mascot">
+                    <defs>
+                        <!-- ═══ SKIN (warm 3D cartoon) ═══ -->
+                        <radialGradient id="skinG" cx="38%" cy="30%" r="78%">
+                            <stop offset="0%" stop-color="#ffe0bc"/>
+                            <stop offset="50%" stop-color="#f4b885"/>
+                            <stop offset="100%" stop-color="#bd8452"/>
+                        </radialGradient>
+                        <radialGradient id="skinHiG" cx="35%" cy="22%" r="45%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
+
+                        <!-- ═══ RED SHIRT 3D ═══ -->
+                        <linearGradient id="shirtG" x1="15%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ff3a3a"/>
+                            <stop offset="35%" stop-color="#e51212"/>
+                            <stop offset="75%" stop-color="#b00808"/>
+                            <stop offset="100%" stop-color="#6d0303"/>
+                        </linearGradient>
+                        <radialGradient id="shirtHiG" cx="32%" cy="18%" r="55%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.5)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
+                        <linearGradient id="shirtShadowG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
+                            <stop offset="100%" stop-color="rgba(0,0,0,0.45)"/>
+                        </linearGradient>
+
+                        <!-- ═══ RED FLAT CAP 3D ═══ -->
+                        <linearGradient id="capG" x1="20%" y1="0%" x2="80%" y2="100%">
+                            <stop offset="0%" stop-color="#ff4444"/>
+                            <stop offset="30%" stop-color="#e01010"/>
+                            <stop offset="70%" stop-color="#a50808"/>
+                            <stop offset="100%" stop-color="#5f0202"/>
+                        </linearGradient>
+                        <radialGradient id="capHiG" cx="35%" cy="22%" r="55%">
+                            <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+                            <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                        </radialGradient>
+                        <linearGradient id="capBrimG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#7a0404"/>
+                            <stop offset="60%" stop-color="#4a0202"/>
+                            <stop offset="100%" stop-color="#2a0101"/>
+                        </linearGradient>
+
+                        <!-- ═══ PANTS ═══ -->
+                        <linearGradient id="pantsG" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#3d4d70"/>
+                            <stop offset="100%" stop-color="#141c30"/>
+                        </linearGradient>
+
+                        <!-- ═══ SHOES ═══ -->
+                        <linearGradient id="bootG" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#5a4028"/>
+                            <stop offset="100%" stop-color="#1a0f05"/>
+                        </linearGradient>
+
+                        <!-- ═══ WRENCH ═══ -->
+                        <linearGradient id="metalG" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#f5f5fa"/>
+                            <stop offset="40%" stop-color="#a8a8b0"/>
+                            <stop offset="75%" stop-color="#68687a"/>
+                            <stop offset="100%" stop-color="#3a3a48"/>
+                        </linearGradient>
+
+                        <!-- ═══ TEXT SHADOW ═══ -->
+                        <filter id="txtShadow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="1.2"/>
+                            <feOffset dx="0" dy="1.5"/>
+                            <feComponentTransfer><feFuncA type="linear" slope="0.75"/></feComponentTransfer>
+                            <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                        </filter>
+
+                        <!-- ═══ GROUND BLUR ═══ -->
+                        <filter id="groundBlur" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="7"/>
+                        </filter>
+                    </defs>
+
+                    <!-- ═══ GROUND SHADOW ═══ -->
+                    <ellipse cx="180" cy="480" rx="128" ry="22" fill="rgba(0,0,0,0.6)" filter="url(#groundBlur)"/>
+
+                    <!-- ═══ LEGS / PANTS ═══ -->
+                    <path d="M 140 340 L 138 428 Q 136 446 152 448 L 174 448 Q 184 448 184 438 L 184 340 Z"
+                          fill="url(#pantsG)"/>
+                    <path d="M 180 340 L 180 438 Q 180 448 190 448 L 216 448 Q 232 446 230 428 L 224 340 Z"
+                          fill="url(#pantsG)"/>
+                    <ellipse cx="158" cy="388" rx="12" ry="6" fill="rgba(255,255,255,0.09)"/>
+                    <ellipse cx="202" cy="388" rx="12" ry="6" fill="rgba(255,255,255,0.09)"/>
+
+                    <!-- ═══ SHOES ═══ -->
+                    <path d="M 130 430 Q 130 458 155 458 L 184 458 Q 194 458 194 448 L 194 424 L 130 424 Z"
+                          fill="url(#bootG)"/>
+                    <path d="M 180 430 Q 180 458 202 458 L 234 458 Q 246 458 246 446 L 246 424 L 180 424 Z"
+                          fill="url(#bootG)"/>
+                    <rect x="130" y="452" width="64" height="7" rx="2" fill="#0a0603"/>
+                    <rect x="180" y="452" width="66" height="7" rx="2" fill="#0a0603"/>
+                    <path d="M 138 434 L 186 434" stroke="#8a6840" stroke-width="1.8" opacity="0.7" stroke-linecap="round"/>
+                    <path d="M 188 434 L 240 434" stroke="#8a6840" stroke-width="1.8" opacity="0.7" stroke-linecap="round"/>
+
+                    <!-- ═══ TORSO (RED AKIMARK SHIRT) ═══ -->
+                    <path d="M 118 224
+                             Q 100 230 100 266
+                             L 96 346
+                             Q 96 364 114 364
+                             L 246 364
+                             Q 264 364 264 346
+                             L 260 266
+                             Q 260 230 242 224
+                             Z"
+                          fill="url(#shirtG)"/>
+                    <path d="M 118 224 Q 100 230 100 266 L 96 346 Q 96 364 114 364 L 246 364 Q 264 364 264 346 L 260 266 Q 260 230 242 224 Z"
+                          fill="url(#shirtHiG)"/>
+                    <path d="M 96 326 L 96 346 Q 96 364 114 364 L 246 364 Q 264 364 264 346 L 264 326 Z"
+                          fill="url(#shirtShadowG)"/>
+                    <!-- Collar -->
+                    <path d="M 152 222 Q 180 246 208 222 L 202 208 Q 180 226 158 208 Z" fill="#8a0404"/>
+                    <path d="M 152 222 Q 180 246 208 222" stroke="#5a0202" stroke-width="1.5" fill="none"/>
+
+                    <!-- AKIMARK TEXT ON SHIRT -->
+                    <text x="180" y="294"
+                          text-anchor="middle"
+                          font-family="Inter, sans-serif"
+                          font-weight="900"
+                          font-size="24"
+                          fill="#ffffff"
+                          letter-spacing="1.5"
+                          filter="url(#txtShadow)">AKIMARK</text>
+                    <text x="180" y="314"
+                          text-anchor="middle"
+                          font-family="Inter, sans-serif"
+                          font-weight="700"
+                          font-size="7"
+                          fill="#ffb0b0"
+                          letter-spacing="4">ORIGINAL</text>
+
+                    <path d="M 118 256 Q 130 276 122 326" stroke="rgba(0,0,0,0.2)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <path d="M 242 256 Q 230 276 238 326" stroke="rgba(0,0,0,0.2)" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                    <!-- ═══ LEFT ARM (relaxed on hip) ═══ -->
+                    <path d="M 108 242
+                             Q 78 256 76 300
+                             Q 75 330 88 346
+                             Q 100 356 118 348
+                             Q 124 344 122 334
+                             Q 116 326 112 311
+                             Q 108 288 122 264
+                             L 132 242 Z"
+                          fill="url(#shirtG)"/>
+                    <path d="M 92 342 Q 108 356 122 346 Q 130 338 126 328 Q 114 324 104 328 Q 96 332 92 342 Z"
+                          fill="url(#skinG)"/>
+
+                    <!-- ═══ RIGHT ARM (relaxed, holding wrench) ═══ -->
+                    <path d="M 252 242
+                             Q 282 256 284 296
+                             Q 285 330 270 350
+                             Q 258 362 240 356
+                             Q 234 352 236 342
+                             Q 246 334 252 314
+                             Q 258 288 248 264
+                             L 240 242 Z"
+                          fill="url(#shirtG)"/>
+                    <path d="M 240 346 Q 254 362 270 354 Q 280 346 274 334 Q 262 330 252 338 Q 244 342 240 346 Z"
+                          fill="url(#skinG)"/>
+
+                    <!-- ═══ WRENCH ═══ -->
+                    <g transform="rotate(-30 272 306)">
+                        <rect x="268" y="244" width="10" height="92" rx="4" fill="url(#metalG)"/>
+                        <rect x="268" y="244" width="3" height="92" rx="1.5" fill="rgba(255,255,255,0.55)" opacity="0.7"/>
+                        <path d="M 264 244 L 264 226 Q 264 220 272 220 L 278 220 Q 286 220 286 226 L 286 244 Z" fill="url(#metalG)"/>
+                        <circle cx="275" cy="232" r="4.5" fill="#1e1e28"/>
+                        <circle cx="275" cy="232" r="2" fill="#3a3a48"/>
+                        <path d="M 264 336 L 260 354 Q 260 362 268 364 L 282 364 Q 290 362 290 354 L 286 336 Z" fill="url(#metalG)"/>
+                        <circle cx="275" cy="350" r="4.5" fill="#1e1e28"/>
+                        <circle cx="275" cy="350" r="2" fill="#3a3a48"/>
+                    </g>
+
+                    <!-- ═══ NECK ═══ -->
+                    <path d="M 162 200 L 162 228 Q 180 238 198 228 L 198 200 Z" fill="url(#skinG)"/>
+                    <path d="M 162 206 Q 180 220 198 206" stroke="#b88858" stroke-width="1.5" fill="none" opacity="0.6"/>
+
+                    <!-- ═══ HEAD (Bigger — real cartoon proportions) ═══ -->
+                    <ellipse cx="180" cy="146" rx="72" ry="74" fill="url(#skinG)"/>
+                    <ellipse cx="180" cy="140" rx="72" ry="74" fill="url(#skinHiG)"/>
+
+                    <!-- Ears -->
+                    <ellipse cx="110" cy="156" rx="11" ry="16" fill="url(#skinG)"/>
+                    <ellipse cx="250" cy="156" rx="11" ry="16" fill="url(#skinG)"/>
+                    <path d="M 110 148 Q 106 156 110 164" stroke="#b88454" stroke-width="1.5" fill="none" opacity="0.7"/>
+                    <path d="M 250 148 Q 254 156 250 164" stroke="#b88454" stroke-width="1.5" fill="none" opacity="0.7"/>
+
+                    <!-- Rosy cheeks -->
+                    <ellipse cx="134" cy="184" rx="15" ry="10" fill="#ff9494" opacity="0.55"/>
+                    <ellipse cx="226" cy="184" rx="15" ry="10" fill="#ff9494" opacity="0.55"/>
+
+                    <!-- BIG CARTOON EYES (Pixar-style) -->
+                    <!-- Left eye socket -->
+                    <ellipse cx="150" cy="150" rx="20" ry="24" fill="#ffffff" stroke="#1a1a20" stroke-width="3"/>
+                    <!-- Right eye socket -->
+                    <ellipse cx="210" cy="150" rx="20" ry="24" fill="#ffffff" stroke="#1a1a20" stroke-width="3"/>
+                    <!-- Left iris (dark brown big) -->
+                    <circle cx="153" cy="156" r="12" fill="#1c1410"/>
+                    <circle cx="153" cy="156" r="11" fill="#2a1d15"/>
+                    <!-- Right iris -->
+                    <circle cx="207" cy="156" r="12" fill="#1c1410"/>
+                    <circle cx="207" cy="156" r="11" fill="#2a1d15"/>
+                    <!-- Big top-left highlight (both eyes) -->
+                    <circle cx="157" cy="148" r="4.5" fill="#ffffff"/>
+                    <circle cx="211" cy="148" r="4.5" fill="#ffffff"/>
+                    <!-- Small secondary highlight -->
+                    <circle cx="147" cy="164" r="2.2" fill="rgba(255,255,255,0.85)"/>
+                    <circle cx="201" cy="164" r="2.2" fill="rgba(255,255,255,0.85)"/>
+
+                    <!-- Eyebrows (expressive, slightly raised) -->
+                    <path d="M 130 122 Q 148 112 168 122" stroke="#3a2010" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path d="M 192 122 Q 212 112 230 122" stroke="#3a2010" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+                    <!-- Small round nose -->
+                    <ellipse cx="180" cy="180" rx="7" ry="5" fill="#d97a48" opacity="0.85"/>
+                    <ellipse cx="178" cy="178" rx="3" ry="2" fill="#ffb89a" opacity="0.8"/>
+
+                    <!-- WARM SMILE -->
+                    <path d="M 152 202 Q 180 228 208 202" stroke="#7a2010" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <!-- teeth hint -->
+                    <path d="M 160 205 Q 180 220 200 205 Q 180 212 160 205 Z" fill="#ffffff" opacity="0.75"/>
+
+                    <!-- ═══ RED FLAT CAP (with TV text) ═══ -->
+                    <g>
+                        <!-- Cap crown (rounded dome sitting on head) -->
+                        <path d="M 108 116
+                                 Q 104 66 138 48
+                                 Q 180 32 222 48
+                                 Q 256 66 252 116
+                                 Q 236 108 180 108
+                                 Q 124 108 108 116 Z"
+                              fill="url(#capG)"/>
+                        <!-- Highlight on top -->
+                        <path d="M 108 116
+                                 Q 104 66 138 48
+                                 Q 180 32 222 48
+                                 Q 256 66 252 116
+                                 Q 236 108 180 108
+                                 Q 124 108 108 116 Z"
+                              fill="url(#capHiG)" opacity="0.85"/>
+                        <!-- Cap vertical seam -->
+                        <path d="M 180 40 L 180 108" stroke="#5a0303" stroke-width="2" opacity="0.6"/>
+                        <!-- Cap back button -->
+                        <circle cx="180" cy="42" r="4" fill="#8a0606" stroke="#5a0303" stroke-width="1"/>
+
+                        <!-- TV TEXT on cap front -->
+                        <text x="180" y="92"
+                              text-anchor="middle"
+                              font-family="Inter, sans-serif"
+                              font-weight="900"
+                              font-size="22"
+                              fill="#ffffff"
+                              letter-spacing="3"
+                              filter="url(#txtShadow)">TV</text>
+
+                        <!-- Brim (short flat brim projecting forward) -->
+                        <path d="M 100 116
+                                 Q 96 110 104 106
+                                 Q 180 92 256 106
+                                 Q 264 110 260 116
+                                 Q 258 122 248 122
+                                 Q 180 114 112 122
+                                 Q 102 122 100 116 Z"
+                              fill="url(#capBrimG)"/>
+                        <!-- Brim top highlight -->
+                        <path d="M 104 106 Q 180 94 256 106"
+                              stroke="rgba(255,255,255,0.45)" stroke-width="1.5" fill="none"/>
+                        <!-- Brim lower shadow -->
+                        <path d="M 112 122 Q 180 114 248 122 Q 244 126 180 120 Q 116 126 112 122 Z"
+                              fill="rgba(0,0,0,0.35)"/>
+                        <!-- Stitching line on brim -->
+                        <path d="M 110 118 Q 180 108 250 118"
+                              stroke="#8a0606" stroke-width="1" fill="none" opacity="0.7" stroke-dasharray="3,3"/>
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Title -->
+            <h1 class="title">
+                Tikukonza <span class="accent">Makina Athu</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="subtitle">
+                Tili pakukonza <strong>makina athu</strong> kuti tikupatseni
+                ntchito yabwino komanso yotetezeka. <span class="chi">Chonde bwererani posachedwa.</span>
+                Zikomo chifukwa cha kuleza mtima kwanu.
+            </p>
+
+            <!-- Footer -->
+            <div class="footer">
+                Made with <span class="heart">♥</span> for Malawi — <strong>Akimark</strong>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ════════════════════════════════════════════════════════════
+        // SECURITY (consistent with rest of site)
+        // ════════════════════════════════════════════════════════════
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>
