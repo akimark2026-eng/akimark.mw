@@ -265,7 +265,7 @@
                 statusMessage.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Payment Success!';
                 statusMessage.className = 'status-message show success';
                 setTimeout(function() {
-                    window.location.href = 'index.html?id=' + (currentMovieId || filmData.id);
+                    window.location.href = 'watch.html?id=' + (currentMovieId || filmData.id);
                 }, 1000);
             } else {
                 var price = Number(filmData.price || 0);
