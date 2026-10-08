@@ -153,20 +153,29 @@
         .maintenance-banner {
             display: none;
             background: linear-gradient(135deg, #c71515 0%, #7a0d0d 50%, #a00f0f 100%);
-            color: #fff; overflow: hidden;
+            color: #fff;
+            border: none;
+            overflow: hidden;
         }
         .maintenance-banner.visible { display: block; }
         .maintenance-content { display: flex; align-items: center; gap: 12px; max-width: 1200px; margin: 0 auto; padding: 12px 16px; }
         .maintenance-icon { flex-shrink: 0; width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .maintenance-icon svg { width: 20px; height: 20px; fill: #fff; }
         .maintenance-text { flex: 1; display: flex; flex-direction: column; gap: 3px; line-height: 1.35; min-width: 0; }
-        .maintenance-text .title { font-size: 0.88rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .maintenance-text .title { font-size: 0.88rem; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         .maintenance-text .title .clock { background: rgba(0,0,0,0.25); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
-        .maintenance-text .body { font-size: 0.8rem; }
+        .maintenance-text .body { font-size: 0.8rem; opacity: 0.96; }
         .maintenance-text .body strong { color: #fff; font-weight: 700; }
-        .maintenance-close { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; }
+        .maintenance-close { flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; border: none; }
         .maintenance-close svg { width: 16px; height: 16px; fill: #fff; }
 
+        @media (max-width: 600px) {
+            .maintenance-content { padding: 10px 12px; gap: 10px; }
+            .maintenance-icon { width: 30px; height: 30px; }
+            .maintenance-icon svg { width: 17px; height: 17px; }
+            .maintenance-text .title { font-size: 0.8rem; }
+            .maintenance-text .body { font-size: 0.72rem; }
+        }
         /* SEARCH */
         .search-subheader { background: #0e0e0e; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
         .search-subheader.open { max-height: 400px; overflow: visible; padding: 10px 16px; }
