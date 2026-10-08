@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Update Available — Akimark</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        :root {
+            --bg: #0a0a0f;
+            --bg-2: #12121a;
+            --card: #16161f;
+            --border: rgba(255,255,255,0.08);
+            --text: #f4f4f7;
+            --muted: #9a9aae;
+            --brand: #c71515;
+            --brand-2: #f43f5e;
+            --brand-glow: rgba(199,21,21,0.4);
+            --gold: #fbbf24;
+            --success: #10b981;
+        }
+
+        html, body {
+            background: #000;
+            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(900px 600px at 50% 0%, rgba(199,21,21,0.20), transparent 60%),
+                radial-gradient(700px 500px at 50% 100%, rgba(199,21,21,0.10), transparent 60%);
+            pointer-events: none;
+            animation: bgPulse 5s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .update-wrap {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px 40px;
+            text-align: center;
+        }
+
+        .card {
+            max-width: 460px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+
+        /* RED BANNER */
+        .red-banner {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #c71515 0%, #7a0d0d 50%, #a00f0f 100%);
+            color: #fff;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(199,21,21,0.35);
+            animation: bannerSlide 0.5s cubic-bezier(0.2,0,0,1);
+        }
+
+        .red-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+            animation: bannerShimmer 3s infinite;
+        }
+
+        .red-banner .icon {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        .red-banner .icon svg { width: 18px; height: 18px; fill: #fff; }
+
+        .red-banner .text {
+            flex: 1;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        .red-banner .text .sub {
+            font-weight: 500;
+            font-size: 0.75rem;
+            opacity: 0.9;
+            margin-top: 2px;
+            letter-spacing: 0.2px;
+        }
+
+        @keyframes bannerSlide {
+            from { transform: translateY(-14px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes bannerShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* GREEN BANNER */
+        .green-banner {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #047857 50%, #059669 100%);
+            color: #fff;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(16,185,129,0.35);
+            animation: bannerSlide 0.5s cubic-bezier(0.2,0,0,1);
+            margin-bottom: 4px;
+        }
+
+        .green-banner.show { display: flex; }
+
+        .green-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            animation: bannerShimmer 2.4s infinite;
+        }
+
+        .green-banner .icon {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.22);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .green-banner .icon svg { width: 18px; height: 18px; fill: #fff; }
+
+        .green-banner .text {
+            flex: 1;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        .green-banner .text .sub {
+            font-weight: 500;
+            font-size: 0.75rem;
+            opacity: 0.95;
+            margin-top: 2px;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-open-file {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 9px 14px;
+            background: #fff;
+            color: #047857;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            z-index: 1;
+            font-family: inherit;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+            animation: btnPulseOpen 1.6s ease-in-out infinite;
+        }
+
+        .btn-open-file:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(0,0,0,0.3);
+        }
+
+        .btn-open-file:active { transform: translateY(0) scale(0.97); }
+
+        .btn-open-file svg { width: 14px; height: 14px; fill: currentColor; }
+
+        @keyframes btnPulseOpen {
+            0%, 100% { box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 0 0 0 rgba(255,255,255,0.5); }
+            50% { box-shadow: 0 6px 16px rgba(0,0,0,0.2), 0 0 0 6px rgba(255,255,255,0); }
+        }
+
+        /* Title */
+        .title {
+            font-size: 1.65rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        .title .accent { color: var(--brand); }
+
+        /* Subtitle */
+        .subtitle {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: #b8b8c8;
+            max-width: 380px;
+        }
+
+        .subtitle strong { color: #fff; font-weight: 700; }
+
+        /* DOWNLOAD SECTION */
+        .download-section {
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 28px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 12px 32px var(--brand-glow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s;
+            animation: btnShine 2.8s ease-in-out infinite;
+            font-family: inherit;
+        }
+
+        .btn-download:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px var(--brand-glow);
+        }
+
+        .btn-download:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+        .btn-download:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        .btn-download svg { width: 20px; height: 20px; fill: #fff; }
+
+        @keyframes btnShine {
+            0%, 100% { box-shadow: 0 12px 32px var(--brand-glow); }
+            50% { box-shadow: 0 12px 32px var(--brand-glow), 0 0 0 8px rgba(199,21,21,0.08); }
+        }
+
+        /* Progress bar */
+        .progress-block {
+            display: none;
+            flex-direction: column;
+            gap: 8px;
+            padding: 14px 16px;
+            background: rgba(20,20,26,0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            animation: fadeUp 0.35s ease;
+        }
+
+        .progress-block.show { display: flex; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .progress-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #b8b8c8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-label .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--brand);
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(199,21,21,0.7); }
+            50% { box-shadow: 0 0 0 6px rgba(199,21,21,0); }
+        }
+
+        .progress-percent {
+            font-size: 0.95rem;
+            font-weight: 900;
+            color: var(--brand);
+            font-family: 'SF Mono', Menlo, monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-percent.done { color: var(--success); }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--brand), var(--brand-2));
+            border-radius: 999px;
+            transition: width 0.15s linear;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            animation: fillShimmer 1.4s infinite;
+        }
+
+        .progress-fill.done {
+            background: linear-gradient(90deg, var(--success), #34d399);
+        }
+
+        @keyframes fillShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-status {
+            font-size: 0.72rem;
+            color: var(--muted);
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            text-align: left;
+        }
+
+        /* Retry button */
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #b8b8c8;
+            font-size: 0.82rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-retry:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .btn-retry svg { width: 14px; height: 14px; fill: currentColor; }
+
+        /* Footer */
+        .footer {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #4a4a5a;
+            margin-top: 8px;
+        }
+
+        .footer strong { color: #6a6a7a; font-weight: 800; }
+
+        /* Loading state */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .loading-spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(199,21,21,0.2);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        /* Help modal */
+        .help-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .help-modal.show { display: flex; }
+
+        .help-card {
+            background: linear-gradient(145deg, #16161f, #12121a);
+            border-radius: 18px;
+            padding: 26px 22px;
+            max-width: 380px;
+            width: 100%;
+            color: #f4f4f7;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.7);
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .help-card .help-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 14px;
+            box-shadow: 0 12px 28px rgba(16,185,129,0.4);
+        }
+
+        .help-card .help-icon svg { width: 30px; height: 30px; fill: #fff; }
+
+        .help-card h3 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .help-card p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #b8b8c8;
+            margin-bottom: 18px;
+        }
+
+        .help-card ol {
+            text-align: left;
+            font-size: 0.85rem;
+            line-height: 1.75;
+            color: #d4d4e0;
+            margin: 0 auto 18px;
+            max-width: 300px;
+            padding-left: 20px;
+        }
+
+        .help-card ol li { margin-bottom: 4px; }
+        .help-card ol li strong { color: #fff; }
+
+        .help-card button {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #c71515, #f43f5e);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 10px 28px rgba(199,21,21,0.4);
+        }
+
+        @media (max-width: 480px) {
+            .title { font-size: 1.4rem; }
+            .subtitle { font-size: 0.88rem; }
+            .red-banner { padding: 12px 14px; }
+            .red-banner .text { font-size: 0.8rem; }
+            .red-banner .text .sub { font-size: 0.7rem; }
+            .green-banner { padding: 12px 12px; gap: 8px; flex-wrap: wrap; }
+            .green-banner .text { font-size: 0.78rem; }
+            .green-banner .text .sub { font-size: 0.68rem; }
+            .btn-open-file { padding: 8px 12px; font-size: 0.72rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="update-wrap">
+        <div class="card" id="content">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Checking for updates…</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HELP MODAL -->
+    <div class="help-modal" id="helpModal">
+        <div class="help-card">
+            <div class="help-icon">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            </div>
+            <h3>How to Install the Update</h3>
+            <p>APK file yatsitsidwa. Tsatirani njira izi kuti muipange install:</p>
+            <ol>
+                <li>Tsegulani <strong>Files</strong> app pa phone yanu</li>
+                <li>Pitani ku <strong>Downloads</strong> folder</li>
+                <li>Dinani pa <strong>1akimark.apk</strong></li>
+                <li>Ngati Android ipempha, dinani <strong>Allow</strong> kuti muyitseke</li>
+                <li>Dinani <strong>Install</strong></li>
+            </ol>
+            <p style="font-size:0.75rem;color:#6a6a7a;">
+                Kapena: <strong style="color:#fff;">Tsitsani notification bar</strong> pamwamba pa phone, mukapeza "1akimark.apk downloaded. Tap to install."
+            </p>
+            <button id="closeHelpBtn">Got it</button>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ════════════════════════════════════════════════════════════
+        // CONFIG
+        // ════════════════════════════════════════════════════════════
+        const DOWNLOAD_URL = '1akimark.apk';  // File iyenera kukhala mu same folder
+        const DOWNLOAD_FILENAME = '1akimark.apk';
+
+        function esc(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function render() {
+            const content = document.getElementById('content');
+
+            content.innerHTML = `
+                <div class="green-banner" id="openFileBanner">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <div class="text">
+                        Download complete
+                        <div class="sub">Tap Open File to install the update</div>
+                    </div>
+                    <button class="btn-open-file" id="openFileBtn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        Open File
+                    </button>
+                </div>
+
+                <div class="red-banner">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                    </div>
+                    <div class="text">
+                        New version available
+                        <div class="sub">Please update to continue using Akimark</div>
+                    </div>
+                </div>
+
+                <h1 class="title">
+                    Update <span class="accent">App</span>
+                </h1>
+
+                <p class="subtitle">
+                    Tawonjezela machitidwe a <strong>App yathu</strong>.
+                    Chonde pangani download app yatsopano kuti mupitilize
+                    kugwiritsa ntchito <strong>Akimark</strong>.
+                </p>
+
+                <div class="download-section">
+                    <button class="btn-download" id="downloadBtn">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/>
+                        </svg>
+                        DOWNLOAD NOW
+                    </button>
+
+                    <div class="progress-block" id="progressBlock">
+                        <div class="progress-header">
+                            <div class="progress-label">
+                                <span class="live-dot"></span>
+                                <span id="progressLabel">Downloading…</span>
+                            </div>
+                            <div class="progress-percent" id="progressPercent">0%</div>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-status" id="progressStatus">Starting download…</div>
+                    </div>
+                </div>
+
+                <button class="btn-retry" id="retryBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M17.65 6.35A7.958 7.958 0 0012 4a8 8 0 100 16c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18a6 6 0 110-12c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                    Recheck Version
+                </button>
+
+                <div class="footer">
+                    Made with <strong>♥</strong> for Malawi — <strong>Akimark</strong>
+                </div>
+            `;
+
+            var downloadBtn = document.getElementById('downloadBtn');
+            var progressBlock = document.getElementById('progressBlock');
+            var progressFill = document.getElementById('progressFill');
+            var progressPercent = document.getElementById('progressPercent');
+            var progressLabel = document.getElementById('progressLabel');
+            var progressStatus = document.getElementById('progressStatus');
+            var retryBtn = document.getElementById('retryBtn');
+            var openFileBanner = document.getElementById('openFileBanner');
+            var openFileBtn = document.getElementById('openFileBtn');
+            var helpModal = document.getElementById('helpModal');
+            var closeHelpBtn = document.getElementById('closeHelpBtn');
+
+            var isDownloading = false;
+
+            if (retryBtn) {
+                retryBtn.addEventListener('click', function() {
+                    window.location.href = 'index.html';
+                });
+            }
+
+            if (openFileBtn) {
+                openFileBtn.addEventListener('click', function() {
+                    openApkFile();
+                });
+            }
+
+            if (closeHelpBtn) {
+                closeHelpBtn.addEventListener('click', function() {
+                    helpModal.classList.remove('show');
+                });
+            }
+
+            if (helpModal) {
+                helpModal.addEventListener('click', function(e) {
+                    if (e.target === helpModal) helpModal.classList.remove('show');
+                });
+            }
+
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function() {
+                    if (isDownloading) return;
+                    isDownloading = true;
+
+                    if (openFileBanner) openFileBanner.classList.remove('show');
+
+                    downloadBtn.disabled = true;
+                    downloadBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5v6.59l2.3-2.29 1.4 1.42L12 17.41l-4.7-4.7 1.4-1.42L11 13.59V7h2z"/></svg> Downloading…';
+
+                    progressBlock.classList.add('show');
+                    progressFill.style.width = '0%';
+                    progressFill.classList.remove('done');
+                    progressPercent.textContent = '0%';
+                    progressPercent.classList.remove('done');
+                    progressLabel.textContent = 'Downloading…';
+                    progressStatus.textContent = 'Starting download…';
+
+                    startDownload();
+                });
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // START DOWNLOAD — universal method
+            //   Try streaming fetch first (modern browsers/WebViews)
+            //   Fallback to direct navigation (works in old WebView)
+            // ════════════════════════════════════════════════════════════
+            function startDownload() {
+                // ── Try streaming fetch (for progress %)
+                if (window.fetch && window.ReadableStream && window.Response) {
+                    fetch(DOWNLOAD_URL, {
+                        method: 'GET',
+                        cache: 'no-store',
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('HTTP ' + response.status);
+
+                        var contentLength = response.headers.get('content-length');
+                        var reader = response.body && response.body.getReader
+                            ? response.body.getReader()
+                            : null;
+
+                        if (!reader) {
+                            nativeDownloadFallback();
+                            return;
+                        }
+
+                        var received = 0;
+                        var total = contentLength ? parseInt(contentLength, 10) : 0;
+                        var chunks = [];
+
+                        function pump() {
+                            return reader.read().then(function(result) {
+                                if (result.done) {
+                                    var blob = new Blob(chunks, { type: 'application/vnd.android.package-archive' });
+                                    saveBlob(blob);
+                                    onDownloadComplete();
+                                    return;
+                                }
+                                chunks.push(result.value);
+                                received += result.value.length;
+
+                                if (total > 0) {
+                                    var pct = Math.min(100, Math.round((received / total) * 100));
+                                    onProgress(pct, received, total);
+                                } else {
+                                    var approxPct = Math.min(95, Math.round((received / (5 * 1024 * 1024)) * 100));
+                                    onProgress(approxPct, received, 0);
+                                }
+                                return pump();
+                            });
+                        }
+
+                        return pump();
+                    })
+                    .catch(function(err) {
+                        console.warn('[Akimark] Stream failed, native fallback:', err);
+                        nativeDownloadFallback();
+                    });
+                } else {
+                    nativeDownloadFallback();
+                }
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // NATIVE DOWNLOAD FALLBACK
+            //   Uses window.location.href — triggers Android Download Manager
+            //   Works in OLD WebView, no permissions required
+            // ════════════════════════════════════════════════════════════
+            function nativeDownloadFallback() {
+                // Show user that download is starting
+                progressLabel.textContent = 'Download Started';
+                progressStatus.textContent = 'Check your notification panel to install';
+
+                // Trigger native download
+                try {
+                    window.location.href = DOWNLOAD_URL;
+                } catch (e) {
+                    // Last resort: hidden anchor
+                    var a = document.createElement('a');
+                    a.href = DOWNLOAD_URL;
+                    a.download = DOWNLOAD_FILENAME;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(function() { document.body.removeChild(a); }, 200);
+                }
+
+                // Simulate progress since we can't measure native download
+                var pct = 0;
+                var interval = setInterval(function() {
+                    pct += Math.floor(Math.random() * 10) + 6;
+                    if (pct >= 100) {
+                        pct = 100;
+                        clearInterval(interval);
+                        onProgress(pct, 0, 0);
+                        onDownloadComplete();
+                    } else {
+                        onProgress(pct, 0, 0);
+                    }
+                }, 350);
+            }
+
+            function onProgress(pct, received, total) {
+                progressFill.style.width = pct + '%';
+                progressPercent.textContent = pct + '%';
+
+                if (total > 0) {
+                    var receivedMb = (received / (1024 * 1024)).toFixed(1);
+                    var totalMb = (total / (1024 * 1024)).toFixed(1);
+                    progressStatus.textContent = receivedMb + ' MB / ' + totalMb + ' MB';
+                }
+            }
+
+            function onDownloadComplete() {
+                progressFill.style.width = '100%';
+                progressFill.classList.add('done');
+                progressPercent.textContent = '100%';
+                progressPercent.classList.add('done');
+                progressLabel.textContent = 'Download Complete';
+                progressStatus.textContent = 'Please install the APK file';
+
+                downloadBtn.disabled = false;
+                downloadBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Download Again';
+                isDownloading = false;
+
+                if (openFileBanner) {
+                    openFileBanner.classList.add('show');
+                    try { openFileBanner.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+                }
+            }
+
+            function saveBlob(blob) {
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = DOWNLOAD_FILENAME;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 200);
+            }
+
+            // ════════════════════════════════════════════════════════════
+            // OPEN APK FILE
+            //   New app: Android bridge opens install directly
+            //   Old app: cannot auto-open (no bridge) → show instructions
+            // ════════════════════════════════════════════════════════════
+            function openApkFile() {
+                var opened = false;
+
+                // 1. New app bridge — openApkFile
+                try {
+                    if (window.Android && typeof window.Android.openApkFile === 'function') {
+                        window.Android.openApkFile(DOWNLOAD_FILENAME);
+                        opened = true;
+                    }
+                } catch (e) { console.warn('[Akimark] openApkFile error:', e); }
+
+                // 2. New app bridge — installApk
+                if (!opened) {
+                    try {
+                        if (window.Android && typeof window.Android.installApk === 'function') {
+                            window.Android.installApk(DOWNLOAD_FILENAME);
+                            opened = true;
+                        }
+                    } catch (e) { console.warn('[Akimark] installApk error:', e); }
+                }
+
+                // 3. New app bridge — openFile
+                if (!opened) {
+                    try {
+                        if (window.Android && typeof window.Android.openFile === 'function') {
+                            window.Android.openFile(DOWNLOAD_FILENAME);
+                            opened = true;
+                        }
+                    } catch (e) {}
+                }
+
+                // 4. Fallback: show instructions (for OLD app that has no bridge)
+                if (!opened) {
+                    helpModal.classList.add('show');
+                }
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', render);
+        } else {
+            render();
+        }
+    })();
+    </script>
+</body>
+</html>
