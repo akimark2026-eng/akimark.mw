@@ -58,7 +58,7 @@
             window.location.href = '/register';
             return;
         }
-        fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/login-checker', {
+        fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/login-checker', {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         })
@@ -77,7 +77,7 @@
         if (errorState) errorState.style.display = 'none';
         if (filmDetails) filmDetails.classList.remove('show');
 
-        var url = 'https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/viewing-film-api?action=get_movie';
+        var url = 'https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/viewing-film-api?action=get_movie';
         fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
@@ -194,7 +194,7 @@
         if (translatorProfile) translatorProfile.style.display = 'flex';
         if (translatorAvatar) translatorAvatar.src = DEFAULT_AVATAR;
 
-        var url = 'https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/v1-admin-api?action=get_profile_by_name&name=' + encodeURIComponent(filmData.translator_name);
+        var url = 'https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/v1-admin-api?action=get_profile_by_name&name=' + encodeURIComponent(filmData.translator_name);
         fetch(url, { method: 'GET', headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' } })
         .then(response => response.json())
         .then(data => {
@@ -213,7 +213,7 @@
     function toggleFollow() {
         if (!adminId) return;
         var action = isFollowing ? 'unfollow' : 'follow';
-        fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/v1-admin-api?action=' + action + '&admin_id=' + adminId, {
+        fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/v1-admin-api?action=' + action + '&admin_id=' + adminId, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
             body: JSON.stringify({})
@@ -251,7 +251,7 @@
         watchBtnText.textContent = 'Processing...';
         statusMessage.classList.remove('show');
 
-        fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/update-balance-api', {
+        fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/update-balance-api', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify({ film_id: currentMovieId || filmData.id })
