@@ -44,7 +44,7 @@
         var token = getToken();
         if (!token) { window.location.href = 'login.html'; return false; }
 
-        fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/login-checker', {
+        fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/login-checker', {
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         })
