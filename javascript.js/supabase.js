@@ -1,4 +1,4 @@
 // javascript/supabase.js
 // Zomwe zimagwiritsidwa ntchito pa frontend
-window.SUPABASE_URL = 'https://vqmmsqtlszzugdyoyilu.supabase.co';
-window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZxbW1zcXRsc3p6dWdkeW95aWx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0OTM2NjEsImV4cCI6MjEwNzA2OTY2MX0.pYA2g08BNkoCJ4mVoGis_fivTWQICtK35SP4bjwwJ1w';
+window.SUPABASE_URL = 'https://jnqwvmxuieeelvukhcsq.supabase.co';
+window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpucXd2bXh1aWVlZWx2dWtoY3NxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczODEzNjYsImV4cCI6MjEwMjk1NzM2Nn0.hK8sxh1RscVJroevXmZ8x75eU5EPdGIphUrqgwfz0bw';
