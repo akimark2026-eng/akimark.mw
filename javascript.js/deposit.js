@@ -87,7 +87,7 @@
 
     async function checkTransactionStatus(txRef) {
         try {
-            var response = await fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/v1-api', {
+            var response = await fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/v1-api', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -162,7 +162,7 @@
         showStatus('', true);
 
         try {
-            var response = await fetch('https://jnqwvmxuieeelvukhcsq.supabase.co/functions/v1/deposit-api', {
+            var response = await fetch('https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/deposit-api', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
