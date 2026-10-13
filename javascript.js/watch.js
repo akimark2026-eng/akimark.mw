@@ -5,7 +5,7 @@
     const BUILD_VERSION = 'v20261004-4';
     console.log(`[Akimark] watch.js ${BUILD_VERSION} loaded`);
 
-    const SUPABASE_URL = window.SUPABASE_URL || 'https://jnqwvmxuieeelvukhcsq.supabase.co';
+    const SUPABASE_URL = window.SUPABASE_URL || 'https://vqmmsqtlszzugdyoyilu.supabase.co';
     const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
     const movieId = new URLSearchParams(window.location.search).get('id');
 
