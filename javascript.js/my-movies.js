@@ -45,7 +45,7 @@
                 movieListEl.innerHTML = '';
                 emptyStateEl.style.display = 'flex';
                 movieListEl.style.display = 'none'; // Bisa list
-                if (summaryBar) summaryBar.innerHTML = '<span>0 VIDEOS</span><span>0.0 GB</span>';
+                if (summaryBar) summaryBar.innerHTML = '<span>0 VIDEOS</span><span></span>';
                 return;
             }
             
