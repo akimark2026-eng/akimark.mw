@@ -5,7 +5,7 @@
 
     // ================== CONFIG ==================
     var TOKEN_KEY = 'akmark_token';
-    var SUPABASE_URL = window.SUPABASE_URL || 'https://jnqwvmxuieeelvukhcsq.supabase.co';
+    var SUPABASE_URL = window.SUPABASE_URL || 'https://vqmmsqtlszzugdyoyilu.supabase.co';
     var HOME_PAGE = 'home.html';
     var NON_PAGE = 'non.html';
     var BLOCKED_PAGE = 'blocked.html';
