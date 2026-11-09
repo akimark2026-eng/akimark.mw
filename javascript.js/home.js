@@ -13,7 +13,7 @@
     var BG_FETCH_SIZE = 100; 
 
     // 🎯 GUARANTEED TRANSLATORS (These will ALWAYS show up)
-    var CORE_TRANSLATORS = ['AKILA', 'DAT-V', 'DENMARK', 'TUMAS'];
+    var CORE_TRANSLATORS = ['AKILA', 'DENMARK', 'DAT-V'];
 
     // ════════════════════════════════════════════════════════════
     // 🎯 COOKIE HELPERS (WebView Fallback)
