@@ -394,19 +394,7 @@
             window.open('https://wa.me/?text=' + text, '_blank');
         });
 
-        copyLinkBtn.addEventListener('click', function() {
-            var url = window.location.href;
-            
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(url).then(function() {
-                    showToast('Link copied to clipboard!');
-                }).catch(function() {
-                    fallbackCopyTextToClipboard(url);
-                });
-            } else {
-                fallbackCopyTextToClipboard(url);
-            }
-        });
+        
     }
 
     function fallbackCopyTextToClipboard(text) {
