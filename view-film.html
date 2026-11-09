@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>View Film - Akimark</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg-primary: #080808;
+            --bg-surface: #151515;
+            --bg-secondary: #1C1C1C;
+            --accent: #c71515;
+            --accent-soft: #a00f0f;
+            --blue: #1DA1F2;
+            --green: #25D366;
+            --white: #FFFFFF;
+            --text-muted: #A7A7A7;
+            --border-subtle: rgba(255,255,255,0.08);
+            --radius: 8px;
+            --radius-sm: 4px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --transition: 0.2s cubic-bezier(0.2,0,0,1);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary); color: #fff; line-height: 1.5; min-height: 100vh;
+            overflow-x: hidden; user-select: none; -webkit-user-select: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+
+        a { color: inherit; text-decoration: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8,8,8,0.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle); padding: 8px 0;
+        }
+        .header .container {
+            max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+        }
+        .logo img { height: 28px; width: auto; object-fit: contain; }
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            color: var(--text-muted); font-size: 0.8rem; font-weight: 600;
+            padding: 6px 10px; border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .back-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .back-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
+
+        .container { max-width: 700px; margin: 0 auto; padding: 16px 12px; }
+
+        /* PREMIUM SKELETON LOADER */
+        .skeleton-loader { display: none; }
+        .skeleton-loader.show { display: block; }
+        .skeleton {
+            background: linear-gradient(90deg, #121212 25%, #2a2a2a 50%, #121212 75%);
+            background-size: 200% 100%; animation: shimmer 1.5s infinite linear;
+            border-radius: 6px;
+        }
+        .skeleton-profile { height: 72px; margin-bottom: 16px; border-radius: 8px; }
+        .skeleton-poster { width: 100%; height: 220px; margin-bottom: 16px; border-radius: 8px; }
+        .skeleton-btn { height: 52px; margin-bottom: 16px; border-radius: 8px; }
+        .skeleton-title { height: 28px; margin-bottom: 16px; width: 70%; }
+        .skeleton-actions { height: 40px; margin-bottom: 16px; width: 50%; }
+        .skeleton-episode { height: 80px; margin-bottom: 10px; }
+        
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* FILM DETAILS */
+        .film-details { display: none; animation: fadeUp 0.4s ease; }
+        .film-details.show { display: block; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TRANSLATOR PROFILE */
+        .translator-profile {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg-surface); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 12px; margin-bottom: 16px;
+        }
+        .translator-avatar { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; background: var(--bg-secondary); border: 1px solid var(--border-subtle); flex-shrink: 0; }
+        .translator-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .translator-info { flex: 1; }
+        .translator-name { font-size: 0.95rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px; }
+        .translator-followers { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+        
+        .follow-btn {
+            background: var(--blue); color: #fff; border: none; border-radius: 6px;
+            padding: 8px 16px; font-size: 0.85rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; box-shadow: 0 2px 8px rgba(29,161,242,0.2);
+        }
+        .follow-btn.following { background: transparent; color: #fff; border: 1px solid var(--border-subtle); box-shadow: none; }
+        .follow-btn:hover { background: #0d8bd9; transform: scale(1.02); }
+        .follow-btn:active { transform: scale(0.98); }
+
+        .verified-badge {
+            background-color: var(--blue); border-radius: 50%; width: 14px; height: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 8px; margin-left: 2px; vertical-align: middle;
+        }
+        .verified-badge svg { width: 8px; height: 8px; fill: currentColor; }
+
+        /* FILM POSTER */
+        .film-poster {
+            position: relative; border-radius: 8px; overflow: hidden;
+            background: var(--bg-secondary); border: 1px solid var(--border-subtle);
+            width: 100%; max-width: 600px; margin: 0 auto 16px;
+            aspect-ratio: 16/9; box-shadow: var(--shadow);
+        }
+        .film-poster img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* WATCH NOW BUTTON */
+        .watch-btn {
+            width: 100%; padding: 15px 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #fff; font-size: 1rem; font-weight: 800; border: none; border-radius: 8px;
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+            justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 16px; box-shadow: 0 4px 15px rgba(199,21,21,0.3);
+        }
+        .watch-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(199,21,21,0.4); }
+        .watch-btn:active { transform: translateY(0); }
+        .watch-btn:disabled { background: #333; cursor: not-allowed; transform: none; box-shadow: none; color: #888; }
+        .watch-btn .btn-spinner {
+            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none;
+        }
+        .watch-btn.loading .btn-spinner { display: inline-block; }
+        .watch-btn.loading { opacity: 0.8; pointer-events: none; }
+        .play-icon { width: 20px; height: 20px; fill: currentColor; }
+
+        /* FILM TITLE & SHARE SECTION */
+        .film-title {
+            font-size: 1.3rem; font-weight: 800; letter-spacing: -0.3px;
+            margin-bottom: 12px; text-transform: uppercase; line-height: 1.2;
+        }
+        
+        /* SHARE BUTTONS */
+        .share-section {
+            display: flex; gap: 10px; margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;
+        }
+        .share-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+            transition: all 0.2s; border: 1px solid var(--border-subtle); background: var(--bg-surface);
+        }
+        .share-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .share-btn:hover { background: var(--bg-secondary); transform: translateY(-1px); }
+        
+        .share-btn.whatsapp { background: rgba(37, 211, 102, 0.1); color: var(--green); border-color: rgba(37, 211, 102, 0.3); }
+        .share-btn.whatsapp:hover { background: rgba(37, 211, 102, 0.2); }
+        .share-btn.copy { background: rgba(255,255,255,0.05); color: #fff; }
+
+        /* EPISODE LIST */
+        .episodes-container { margin: 12px auto 16px; max-width: 600px; }
+        .episodes-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .episodes-list { display: flex; flex-direction: column; gap: 10px; }
+        .episode-item {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--bg-surface); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 10px; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .episode-item:hover { background: var(--bg-secondary); transform: translateY(-2px); }
+        .episode-item.active { border-color: var(--accent); background: rgba(199,21,21,0.05); }
+        
+        .episode-thumb {
+            position: relative; width: 100px; height: 60px;
+            border-radius: 6px; overflow: hidden; background: var(--bg-secondary); flex-shrink: 0;
+        }
+        .episode-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .play-overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .episode-item:hover .play-overlay { opacity: 1; }
+        .play-overlay svg { width: 24px; height: 24px; fill: #fff; }
+
+        .episode-duration {
+            position: absolute; bottom: 4px; right: 4px;
+            background: rgba(0,0,0,0.8); color: #fff; font-size: 0.6rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 4px; backdrop-filter: blur(4px);
+        }
+        
+        .episode-text { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+        .episode-title { font-size: 0.9rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .episode-price {
+            font-size: 0.75rem; font-weight: 700; color: var(--accent);
+            background: rgba(199,21,21,0.15); padding: 3px 8px; border-radius: 4px; align-self: flex-start;
+        }
+
+        /* STATUS MESSAGE */
+        .status-message { display: none; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; font-size: 0.9rem; font-weight: 600; }
+        .status-message.show { display: flex; }
+        .status-message.success { color: #4caf50; }
+        .status-message.error { color: #ff4d4d; }
+        .status-message svg { width: 18px; height: 18px; }
+
+        /* ERROR STATE */
+        .error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 20px; }
+        .error-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .error-text { color: #ff4d4d; font-size: 0.9rem; margin-bottom: 15px; }
+        .error-btn { padding: 10px 20px; background: var(--accent); color: #fff; border-radius: 6px; font-weight: 600; font-size: 0.85rem; transition: background 0.3s; }
+        .error-btn:hover { background: var(--accent-soft); }
+
+        /* TOAST */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--bg-surface); border: 1px solid var(--border-subtle); color: #fff;
+            padding: 12px 20px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5); opacity: 0; transition: all 0.3s cubic-bezier(0.2,0,0,1);
+            z-index: 1000; display: flex; align-items: center; gap: 8px;
+        }
+        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="home.html" class="logo">
+                <img src="images/logo-akimark.png" onerror="this.onerror=null; this.src='images/logo-akimark.jpg';" alt="Akimark Logo">
+            </a>
+            <div class="header-actions">
+                <a href="javascript:history.back()" class="back-btn">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>BACK</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- HIGH-END SKELETON -->
+        <div id="skeletonLoader" class="skeleton-loader">
+            <div class="skeleton skeleton-profile"></div>
+            <div class="skeleton skeleton-poster"></div>
+            <div class="skeleton skeleton-btn"></div>
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-actions"></div>
+            <div class="skeleton skeleton-episode"></div>
+            <div class="skeleton skeleton-episode"></div>
+        </div>
+
+        <!-- Error -->
+        <div id="errorState" class="error-state" style="display: none;">
+            <div class="error-icon">⚠️</div>
+            <div class="error-text" id="errorMessage">Film not found</div>
+            <a href="home.html" class="error-btn">Go Back Home</a>
+        </div>
+
+        <!-- Film Details -->
+        <div id="filmDetails" class="film-details">
+            <!-- Translator Profile -->
+            <div class="translator-profile" id="translatorProfile" style="display:none;">
+                <div class="translator-avatar">
+                    <img id="translatorAvatar" src="" alt="Translator Avatar">
+                </div>
+                <div class="translator-info">
+                    <div class="translator-name">
+                        <span id="translatorName">Translator</span>
+                        <span class="verified-badge"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></span>
+                    </div>
+                    <div class="translator-followers" id="translatorFollowers">0 followers</div>
+                </div>
+                <button class="follow-btn" id="followBtn">Follow</button>
+            </div>
+
+            <!-- Film Poster -->
+            <div class="film-poster">
+                <img id="filmPoster" src="" alt="Film Poster">
+            </div>
+
+            <!-- WATCH NOW Button -->
+            <button class="watch-btn" id="watchBtn">
+                <span class="btn-spinner"></span>
+                <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="watchBtnText">WATCH NOW MK 0</span>
+            </button>
+
+            <!-- Title -->
+            <h1 class="film-title" id="filmTitle">Loading...</h1>
+
+            <!-- NEW: SHARE & COPY SECTION -->
+            <div class="share-section">
+                <button class="share-btn whatsapp" id="shareWhatsAppBtn">
+                    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    WhatsApp
+                </button>
+                <button class="share-btn copy" id="copyLinkBtn">
+                    <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    Copy Link
+                </button>
+            </div>
+
+            <!-- Episodes Section -->
+            <div id="episodesSection" class="episodes-container" style="display:none;">
+                <div class="episodes-label">Episodes</div>
+                <div class="episodes-list" id="episodesList"></div>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+    </main>
+
+    <!-- Toast for Copy / Share Success -->
+    <div id="toast" class="toast">
+        <span id="toastMessage">Link Copied!</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="javascript.js/supabase.js"></script>
+    <script src="javascript.js/view-film.js"></script>
+</body>
+</html>
