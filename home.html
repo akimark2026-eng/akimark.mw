@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#080808">
+    <title>Akimark Home</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="preconnect" href="https://jnqwvmxuieeelvukhcsq.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://jnqwvmxuieeelvukhcsq.supabase.co">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --bg-primary: #080808;
+            --bg-surface: #151515;
+            --bg-secondary: #1C1C1C;
+            --bg-content: #0a0a0a;
+            --accent: #c71515; 
+            --accent-soft: #a00f0f;
+            --white: #FFFFFF;
+            --text-muted: #A7A7A7;
+            --icon-grey: #8a8a8a;
+            --border-subtle: rgba(255,255,255,0.06);
+            --radius: 8px;
+            --radius-sm: 6px;
+            --transition: 0.25s cubic-bezier(0.2,0,0,1);
+            --header-h: 64px;
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        html, body {
+            overscroll-behavior-y: contain;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar,
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-content); color: #fff; min-height: 100vh; overflow-x: hidden;
+            /* Padding yakwezedwa kuti isasokoneze floating bottom nav */
+            padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+            user-select: none; -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        a { color: inherit; text-decoration: none; border: none; outline: none; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; outline: none; }
+        img { display: block; max-width: 100%; border: none; outline: none; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .accent-text { color: var(--accent); }
+
+        /* SKELETON CARDS */
+        .skeleton-card {
+            background: #121212; border-radius: 12px; overflow: hidden;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .skeleton-card .sk-poster {
+            aspect-ratio: 3/4; background: linear-gradient(135deg, #1a1a1a 0%, #121212 50%, #1a1a1a 100%);
+            position: relative; overflow: hidden; border-radius: 12px;
+        }
+        .skeleton-card .sk-poster::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+        .skeleton-card .sk-info { padding: 10px 4px; display: flex; flex-direction: column; gap: 6px; }
+        .skeleton-card .sk-title {
+            width: 80%; height: 12px; border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+            background-size: 200% 100%; animation: shimmerLine 1.6s infinite;
+        }
+        .skeleton-card .sk-subtitle {
+            width: 50%; height: 8px; border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            background-size: 200% 100%; animation: shimmerLine 1.6s infinite;
+        }
+
+        .skeleton-trending { flex: 0 0 260px; display: flex; flex-direction: column; gap: 8px; }
+        .skeleton-trending .sk-img {
+            aspect-ratio: 16/9; background: linear-gradient(135deg, #1a1a1a 0%, #121212 50%, #1a1a1a 100%);
+            border-radius: 12px; position: relative; overflow: hidden;
+        }
+        .skeleton-trending .sk-img::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+            animation: shimmer 1.6s infinite;
+        }
+        .skeleton-trending .sk-text-lg {
+            width: 70%; height: 14px; border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+            background-size: 200% 100%; animation: shimmerLine 1.6s infinite;
+        }
+        .skeleton-trending .sk-text-sm {
+            width: 40%; height: 10px; border-radius: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+            background-size: 200% 100%; animation: shimmerLine 1.6s infinite;
+        }
+
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @keyframes shimmerLine { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .movie-grid { transition: opacity 0.25s ease; }
+
+        /* HEADER */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(8,8,8,0.95); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            transition: transform 0.35s cubic-bezier(0.2,0,0,1);
+            will-change: transform; border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .header.hidden { transform: translateY(-100%); }
+        
+        .header-row { padding: 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .logo img { height: 38px; width: auto; object-fit: contain; }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; }
+        .header-icon-btn {
+            position: relative; width: 40px; height: 40px; border-radius: 50%;
+            background: #121212; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s, background 0.2s; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.04);
+        }
+        .header-icon-btn:active { transform: scale(0.92); background: #222; }
+        .header-icon-btn svg { width: 20px; height: 20px; stroke: var(--icon-grey); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        .notification-badge {
+            position: absolute; top: -2px; right: -2px; background: var(--accent); color: #fff;
+            font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 10px;
+            min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+            border: 2px solid #080808;
+        }
+
+        /* SEARCH DROPDOWN (Yokonzedwa kuti isabiske pa Subheader) */
+        .search-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: #080808; z-index: 1000;
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.2,0,0,1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .search-dropdown.open { max-height: 80px; overflow: visible; padding-bottom: 12px; }
+        
+        .search-input-wrapper { position: relative; width: 100%; margin: 0 auto; }
+        .search-input-wrapper input {
+            width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08); background: #151515;
+            color: #fff; font-size: 0.9rem; outline: none; font-family: var(--font-main);
+            transition: all 0.2s;
+        }
+        .search-input-wrapper input:focus { border-color: rgba(199,21,21,0.5); background: #1a1a1a; }
+        .search-input-wrapper .search-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; stroke: #777; fill: none; stroke-width: 2.5; pointer-events: none;
+        }
+        .clear-search-btn {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            width: 24px; height: 24px; display: none; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.1); border-radius: 50%; color: #fff; cursor: pointer;
+        }
+        .clear-search-btn.visible { display: flex; }
+        .clear-search-btn svg { width: 12px; height: 12px; fill: currentColor; }
+        
+        /* Search results Zimayandama pamwamba pa zonse */
+        .search-results { 
+            position: absolute; top: calc(100% + 8px); left: 20px; right: 20px; 
+            background: #151515; border-radius: 12px; max-height: 50vh; overflow-y: auto; z-index: 1001;
+            display: none; box-shadow: 0 12px 32px rgba(0,0,0,0.9);
+            border: 1px solid var(--border-subtle);
+        }
+        .search-results.visible { display: block; }
+        .search-results .result-item { padding: 14px 16px; cursor: pointer; font-size: 0.9rem; border-bottom: 1px solid var(--border-subtle); }
+        .search-results .result-item:active { background: rgba(199,21,21,0.2); }
+
+        /* MAINTENANCE BANNER */
+        .maintenance-banner { display: none; background: linear-gradient(135deg, #c71515 0%, #7a0d0d 50%, #a00f0f 100%); overflow: hidden; }
+        .maintenance-banner.visible { display: block; }
+        .maintenance-content { display: flex; align-items: center; gap: 12px; padding: 12px 20px; }
+        .maintenance-icon { flex-shrink: 0; width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .maintenance-icon svg { width: 20px; height: 20px; fill: #fff; }
+        .maintenance-text { flex: 1; display: flex; flex-direction: column; gap: 3px; line-height: 1.35; }
+        .maintenance-text .title { font-size: 0.88rem; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .maintenance-text .title .clock { background: rgba(0,0,0,0.25); font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; }
+        .maintenance-text .body { font-size: 0.8rem; }
+        .maintenance-close { width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,0.28); display: flex; align-items: center; justify-content: center; }
+        .maintenance-close svg { width: 16px; height: 16px; fill: #fff; }
+
+        /* UNIFIED SUBHEADERS */
+        .unified-subheaders {
+            position: sticky; top: var(--header-h); z-index: 99;
+            background: #080808; padding-top: 4px; padding-bottom: 8px;
+            transition: transform 0.35s cubic-bezier(0.2,0,0,1);
+        }
+        .unified-subheaders.hidden { transform: translateY(-100%); }
+
+        .subheader-scroll {
+            display: flex; gap: 6px; overflow-x: auto; padding: 0 20px;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .subheader-scroll::-webkit-scrollbar { display: none; }
+        
+        .category-chip {
+            flex-shrink: 0; padding: 6px 14px; border-radius: 8px; background: #151515;
+            font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+            transition: all var(--transition); white-space: nowrap; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .category-chip.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        .translator-scroll {
+            display: flex; gap: 6px; overflow-x: auto; padding: 8px 20px 0;
+            -webkit-overflow-scrolling: touch; scrollbar-width: none;
+        }
+        .translator-scroll::-webkit-scrollbar { display: none; }
+        
+        .translator-chip {
+            flex-shrink: 0; padding: 4px 12px; border-radius: 50px; background: #151515;
+            font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
+            transition: all var(--transition); white-space: nowrap; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .translator-chip.active { background: var(--accent-soft); color: #fff; border-color: var(--accent); }
+
+        /* SECTION TITLES */
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin: 20px 0 12px; }
+        .section-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .section-title img { width: 32px; height: 32px; object-fit: contain; }
+        
+        .trending-text { 
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; 
+            display: flex; align-items: center; gap: 6px;
+            background: linear-gradient(90deg, #ffffff, #a7a7a7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .trending-text .accent-text {
+            background: linear-gradient(90deg, #ff4d4d, #c71515);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .see-all-btn { font-size: 0.75rem; font-weight: 700; color: var(--accent); background: rgba(199,21,21,0.1); padding: 6px 14px; border-radius: 20px; }
+
+        /* MOVIE CARDS */
+        .movie-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 4px 0; }
+        .movie-card {
+            background: transparent; border-radius: 12px; overflow: hidden;
+            transition: transform var(--transition); cursor: pointer;
+            display: flex; flex-direction: column; position: relative;
+        }
+        .movie-card:active { transform: scale(0.97); }
+
+        .movie-card .poster {
+            aspect-ratio: 3/4; position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #121212 50%, #1a1a1a 100%);
+            overflow: hidden; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .movie-card .poster::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: shimmer 1.8s infinite; z-index: 1; transition: opacity 0.5s ease;
+        }
+        .movie-card .poster.loaded::before { opacity: 0; animation: none; }
+        .movie-card .poster img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: opacity 0.55s ease; opacity: 0; position: relative; z-index: 2;
+        }
+        .movie-card .poster img.loaded { opacity: 1; }
+
+        .movie-card .translator-badge {
+            position: absolute; top: 8px; left: 8px;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+            color: #fff; font-size: 0.55rem; font-weight: 700;
+            padding: 4px 8px; border-radius: 6px; z-index: 3; text-transform: uppercase;
+            white-space: normal; word-break: break-word; line-height: 1.2;
+            max-width: 85%; text-align: left;
+        }
+
+        .movie-card .badge { display: none !important; }
+
+        .movie-card .price-tag {
+            position: absolute; bottom: 8px; right: 8px;
+            background: var(--accent); color: #fff;
+            font-size: 0.7rem; font-weight: 800;
+            padding: 4px 10px; border-radius: 20px; z-index: 3;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .movie-card .info { padding: 8px 2px; display: flex; flex-direction: column; gap: 2px; }
+        .movie-card .info h3 {
+            font-size: 0.85rem; font-weight: 700; margin: 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            color: #fff; text-align: left;
+        }
+        .movie-card .info .genre { font-size: 0.7rem; color: var(--text-muted); margin: 0; text-align: left; }
+
+        /* TOP TRENDING CARDS */
+        .trending-scroll {
+            display: flex; gap: 12px; overflow-x: auto; padding-bottom: 16px;
+            scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+        }
+        .trending-scroll::-webkit-scrollbar { display: none; }
+        .trending-card {
+            flex: 0 0 240px; scroll-snap-align: start;
+            display: flex; flex-direction: column; gap: 8px; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .trending-card:active { transform: scale(0.97); }
+
+        .trending-poster {
+            aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; position: relative;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .trending-poster img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.4s ease; }
+        .trending-poster img.loaded { opacity: 1; }
+
+        .trending-rank {
+            position: absolute; top: 8px; left: 8px; background: var(--accent); color: #fff;
+            font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; z-index: 3;
+        }
+        .trending-play {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 36px; height: 36px; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; z-index: 3; padding-left: 2px;
+        }
+        .trending-info { display: flex; flex-direction: column; gap: 2px; }
+        .trending-info h3 { font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .trending-info p { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* EMPTY STATE */
+        .more-films-coming {
+            grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 50px 20px; background: linear-gradient(135deg, #1a1a1a, #2a2a2a); border-radius: var(--radius);
+            color: var(--text-muted); text-align: center; min-height: 200px;
+        }
+        .more-films-coming .icon { width: 80px; height: 80px; background: var(--accent); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .more-films-coming .icon svg { width: 48px; height: 48px; fill: #fff; }
+        .more-films-coming h4 { color: #fff; font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
+        .more-films-coming p { color: var(--text-muted); font-size: 0.9rem; max-width: 300px; line-height: 1.4; }
+
+        /* FULL SCREEN TAB */
+        .fullscreen-tab {
+            position: fixed; inset: 0; background: #080808; z-index: 999;
+            display: flex; flex-direction: column; transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.2,0,0,1); visibility: hidden;
+        }
+        .fullscreen-tab.active { transform: translateY(0); visibility: visible; }
+        .tab-header { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .tab-header h2 { font-size: 1.2rem; font-weight: 800; }
+        .tab-close-btn { width: 36px; height: 36px; border-radius: 50%; background: #1a1a1a; display: flex; align-items: center; justify-content: center; color: #fff; }
+        .tab-content { padding: 16px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
+        .tab-content .trending-scroll { flex-wrap: wrap; overflow: visible; }
+        .tab-content .trending-card { flex: 0 0 calc(50% - 6px); }
+
+        /* ════════════════════════════════════════════════════════════
+           HIGH-END NATIVE FLOATING BOTTOM NAV
+           ════════════════════════════════════════════════════════════ */
+        .bottom-nav {
+            position: fixed;
+            bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+            left: 16px; right: 16px;
+            z-index: 200;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .bottom-nav a {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 4px; font-size: 0.55rem; font-weight: 600; color: #777;
+            transition: all var(--transition); padding: 4px 8px; min-width: 60px;
+            flex: 1; text-transform: uppercase; position: relative;
+        }
+        .bottom-nav a img {
+            width: 22px; height: 22px; object-fit: contain;
+            filter: brightness(0) saturate(100%) invert(58%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(85%);
+            transition: filter var(--transition), transform var(--transition);
+        }
+        .bottom-nav a.active img {
+            filter: brightness(0) saturate(100%) invert(20%) sepia(90%) saturate(6000%) hue-rotate(352deg) brightness(90%) contrast(95%) drop-shadow(0 0 6px rgba(199,21,21,0.6));
+            transform: translateY(-2px);
+        }
+        .bottom-nav a.active { color: var(--accent); }
+
+        .nav-icon-wrapper { position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+        .nav-badge {
+            position: absolute; top: -6px; right: -8px; background: var(--accent); color: #fff;
+            font-size: 0.55rem; font-weight: 800; padding: 2px 5px; border-radius: 50%;
+            min-width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* LIVE BADGE */
+        .live-badge {
+            position: absolute; top: -8px; right: -14px; background: linear-gradient(135deg, #ff2d2d 0%, #c71515 100%);
+            color: #fff; font-size: 0.45rem; font-weight: 900; padding: 3px 6px 3px 5px; border-radius: 20px;
+            letter-spacing: 0.6px; line-height: 1; text-transform: uppercase; z-index: 5;
+            display: flex; align-items: center; gap: 3px; box-shadow: 0 2px 8px rgba(199,21,21,0.6);
+            animation: livePulse 1.6s ease-in-out infinite;
+        }
+        .live-badge::before { content: ''; width: 5px; height: 5px; background: #fff; border-radius: 50%; animation: liveDot 1.2s ease-in-out infinite; }
+        .live-burst { position: absolute; bottom: 100%; left: 50%; width: 1px; height: 1px; pointer-events: none; z-index: 4; }
+        .live-burst span {
+            position: absolute; bottom: 0; left: 0; font-size: 13px; line-height: 1; opacity: 0;
+            transform: translate(-50%, 0); animation: emojiFloatUp 2.6s infinite;
+        }
+        .live-burst span:nth-child(1) { animation-delay: 0s; --tx: -14px; }
+        .live-burst span:nth-child(2) { animation-delay: 0.33s; --tx: 10px; }
+        .live-burst span:nth-child(3) { animation-delay: 0.66s; --tx: -6px; }
+        .live-burst span:nth-child(4) { animation-delay: 0.99s; --tx: 16px; }
+        .live-burst span:nth-child(5) { animation-delay: 1.32s; --tx: -12px; }
+        .live-burst span:nth-child(6) { animation-delay: 1.65s; --tx: 8px; }
+        .live-burst span:nth-child(7) { animation-delay: 1.98s; --tx: -18px; }
+        .live-burst span:nth-child(8) { animation-delay: 2.31s; --tx: 14px; }
+
+        @keyframes emojiFloatUp { 0% { opacity: 0; transform: translate(-50%, 0) scale(0.3); } 12% { opacity: 1; transform: translate(-50%, -6px) scale(1.05); } 100% { opacity: 0; transform: translate(calc(-50% + var(--tx, 0px)), -62px) scale(0.85); } }
+        @keyframes livePulse { 0%, 100% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 0 rgba(199,21,21,0.6); } 50% { box-shadow: 0 2px 8px rgba(199,21,21,0.6), 0 0 0 6px rgba(199,21,21,0); } }
+        @keyframes liveDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 500; background: var(--bg-surface); border-radius: var(--radius-sm); padding: 12px 20px; display: none; align-items: center; gap: 10px; font-size: 0.9rem; max-width: 90%; box-shadow: 0 12px 32px rgba(0,0,0,0.6); }
+        .toast.visible { display: flex; }
+        .watermark { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 3rem; color: rgba(255,255,255,0.1); pointer-events: none; z-index: 9999; text-transform: uppercase; white-space: nowrap; user-select: none; display: none; }
+        .watermark.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="watermark" id="watermark">AKIMARK</div>
+
+    <!-- HEADER (Logo + Icons) -->
+    <header class="header" id="mainHeader">
+        <div class="container header-row">
+            <div class="logo">
+                <img src="images/new-logo.png" onerror="this.onerror=null; this.src='images/logo-akimark.png';" alt="Akimark">
+            </div>
+            
+            <div class="header-actions">
+                <button class="header-icon-btn" id="searchNavBtn" aria-label="Search">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="7"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+                <a href="notifications.html" class="header-icon-btn" aria-label="Notifications">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notification-badge" id="notificationBadge">0</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- SEARCH DROPDOWN -->
+        <div class="search-dropdown" id="searchSubheader">
+            <div class="container">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input type="text" placeholder="Search movies, series..." id="searchInput">
+                    <button class="clear-search-btn" id="clearSearchBtn">
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="maintenance-banner" id="maintenanceBanner" role="alert" aria-live="polite">
+            <div class="maintenance-content">
+                <div class="maintenance-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                </div>
+                <div class="maintenance-text">
+                    <div class="title">System Maintenance <span class="clock" id="malawiClock">--:--</span></div>
+                    <div class="body">Tikhala tikukonza makina athu chomcho makina athu sagwila ntchito, Kugula ndi ndikuwonela ma filimu sikutheka kuyambila <strong>11:30 PM</strong>.</div>
+                </div>
+                <button class="maintenance-close" id="maintenanceClose">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- UNIFIED SUBHEADERS (Categories & Translators) -->
+    <div class="unified-subheaders" id="unifiedSubheaders">
+        <!-- Categories -->
+        <div class="subheader-scroll">
+            <button class="category-chip active" data-category="all">All</button>
+            <button class="category-chip" data-category="MALAWI MOVIES">MALAWI MOVIES</button>
+            <button class="category-chip" data-category="series">Series</button>
+            <button class="category-chip" data-category="indian">Indian</button>
+            <button class="category-chip" data-category="actions">Actions</button>
+            <button class="category-chip" data-category="nigeria">Nigeria</button>
+            <button class="category-chip" data-category="china">China</button>
+            <button class="category-chip" data-category="turkish">Turkish</button>
+            <button class="category-chip" data-category="korean">Korea</button>
+            <button class="category-chip" data-category="philippines">Philippines</button>
+            <button class="category-chip" data-category="cartoons">Cartoons</button>
+        </div>
+        <!-- Translators -->
+        <div class="translator-scroll" id="translatorContainer">
+            <!-- JS idzadzaza apa -->
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        
+        <!-- LATEST FILMS (Exactly 6) -->
+        <div class="section-header">
+            <h2 class="section-title">
+                <img src="images/latest.png" onerror="this.style.display='none'"> Latest <span class="accent-text">Films</span>
+            </h2>
+            <button class="see-all-btn" id="latestSeeAllBtn">See All</button>
+        </div>
+        
+        <div id="latestGrid" class="movie-grid">
+            <!-- Skeletons za Latest (6) -->
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+        </div>
+
+        <!-- Empty State Latest -->
+        <div id="emptyLatestState" style="display: none;" class="more-films-coming">
+            <div class="icon"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg></div>
+            <h4>No Latest Films Yet</h4>
+            <p>Tikukonza zatsopano. Bwererani posachedwa.</p>
+        </div>
+
+        <!-- TOP TRENDING TODAY -->
+        <div class="section-header" style="margin-top: 24px;">
+            <h2 class="section-title">
+                <span class="trending-text">🔥 Top Trending <span class="accent-text">Today</span></span>
+            </h2>
+            <button class="see-all-btn" id="trendingSeeAllBtn">See All</button>
+        </div>
+
+        <div class="trending-scroll" id="trendingGrid">
+            <!-- Skeletons za Trending (3) -->
+            <div class="skeleton-trending"><div class="sk-img"></div><div class="sk-text-lg"></div><div class="sk-text-sm"></div></div>
+            <div class="skeleton-trending"><div class="sk-img"></div><div class="sk-text-lg"></div><div class="sk-text-sm"></div></div>
+            <div class="skeleton-trending"><div class="sk-img"></div><div class="sk-text-lg"></div><div class="sk-text-sm"></div></div>
+        </div>
+
+        <!-- ALL FILMS -->
+        <div class="section-header" style="margin-top: 24px;">
+            <h2 class="section-title">All <span class="accent-text">Films</span></h2>
+        </div>
+        <div id="homeGrid" class="movie-grid">
+            <!-- Skeletons za All Films (4) -->
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+            <div class="skeleton-card"><div class="sk-poster"></div><div class="sk-info"><div class="sk-title"></div><div class="sk-subtitle"></div></div></div>
+        </div>
+        <div id="scrollSentinel" style="height:20px;"></div>
+    </main>
+
+    <!-- FULL SCREEN TRENDING TAB -->
+    <div class="fullscreen-tab" id="trendingFullScreenTab">
+        <div class="tab-header">
+            <h2>All Trending Today</h2>
+            <button class="tab-close-btn" id="closeTrendingTab">✕</button>
+        </div>
+        <div class="tab-content">
+            <div class="trending-scroll" id="trendingTabGrid"></div>
+        </div>
+    </div>
+
+    <!-- HIGH-END BOTTOM NAV -->
+    <nav class="bottom-nav" id="bottomNav">
+        <a href="#" class="active" id="navMovies">
+            <img src="images/akimark-movies.svg" alt="Movies">
+            <span>Movies</span>
+        </a>
+        <a href="live.html" id="navLive">
+            <div class="nav-icon-wrapper">
+                <img src="images/akimark-live.svg" alt="Live">
+                <span class="live-badge">LIVE</span>
+                <span class="live-burst" aria-hidden="true">
+                    <span>😍</span><span>🔥</span><span>❤️</span><span>😂</span><span>😮</span><span>🤣</span><span>🤩</span><span>🥰</span>
+                </span>
+            </div>
+            <span>Live</span>
+        </a>
+        <a href="my-movies.html">
+            <div class="nav-icon-wrapper">
+                <img src="images/my-films.svg" alt="My Movies">
+                <span id="myMoviesBadge" class="nav-badge">0</span>
+            </div>
+            <span>My Movies</span>
+        </a>
+        <a href="account.html">
+            <img src="images/akimark-account.svg" alt="My Account">
+            <span>My Account</span>
+        </a>
+    </nav>
+
+    <div class="toast" id="toast"><span id="toastMsg">Action completed</span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="javascript.js/supabase.js"></script>
+    <script src="javascript.js/home.js?v=20260925-10"></script>
+
+    <!-- SCRIPT YA TREND API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var trendingGrid = document.getElementById('trendingGrid');
+            var trendingTabGrid = document.getElementById('trendingTabGrid');
+            var trendingSeeAllBtn = document.getElementById('trendingSeeAllBtn');
+            var trendingFullScreenTab = document.getElementById('trendingFullScreenTab');
+            var closeTrendingTab = document.getElementById('closeTrendingTab');
+            
+            if(!trendingGrid) return;
+
+            var trendUrl = 'https://vqmmsqtlszzugdyoyilu.supabase.co/functions/v1/trend-api'; 
+            
+            fetch(trendUrl, { method: 'GET' })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var movies = data.movies || data.data || [];
+                if(movies.length === 0) {
+                    trendingGrid.innerHTML = '<p style="color:#888; font-size:0.8rem; padding: 10px 0;">No trending movies today.</p>';
+                    return;
+                }
+                
+                var html = '';
+                movies.forEach(function(m, index) {
+                    html += `
+                        <div class="trending-card" onclick="window.location.href='view-film.html?id=${m.id}'">
+                            <div class="trending-poster">
+                                <img src="${m.poster_url || 'images/default-poster.jpg'}" alt="${m.title}" onerror="this.src='images/default-poster.jpg'" class="loaded">
+                                <div class="trending-play">
+                                    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                                <span class="trending-rank">#${index + 1}</span>
+                            </div>
+                            <div class="trending-info">
+                                <h3>${m.title}</h3>
+                                <p>${m.translator_name || 'Akila Voice'} • MK ${m.price || 0}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if(movies.length > 3) {
+                    var top3Html = html.split('</div>\n                        </div>').slice(0, 3).join('</div>\n                        </div>') + '</div>\n                        </div>';
+                    trendingGrid.innerHTML = top3Html;
+                } else {
+                    trendingGrid.innerHTML = html;
+                }
+
+                if(trendingTabGrid) trendingTabGrid.innerHTML = html;
+            })
+            .catch(function(err) {
+                console.error('Trend fetch failed', err);
+                trendingGrid.innerHTML = '<p style="color:#888; font-size:0.8rem; padding: 10px 0;">Failed to load trending.</p>';
+            });
+
+            if(trendingSeeAllBtn) {
+                trendingSeeAllBtn.addEventListener('click', function() {
+                    trendingFullScreenTab.classList.add('active');
+                });
+            }
+            if(closeTrendingTab) {
+                closeTrendingTab.addEventListener('click', function() {
+                    trendingFullScreenTab.classList.remove('active');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
