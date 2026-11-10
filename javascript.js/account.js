@@ -326,6 +326,9 @@
                 return false;
             }
         });
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+    window.location.href = 'non';
+});
     }
 
     function init() {
