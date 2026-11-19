@@ -125,7 +125,7 @@
     // ════════════════════════════════════════════════════════════
     var token = getToken();
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = 'non.html';
         return;
     }
     window._currentToken = token;
