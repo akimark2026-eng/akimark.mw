@@ -1,13 +1,7 @@
-// home.js (v32 — Pro High-End: 1-Hour Session Cache + Zero Network Routing + SWR)
-// Upgrades vs v31:
-//  - TTL.LOGIN: 5 min → 60 min (login-checker called once per hour max).
-//  - LOGIN cache moved to localStorage (survives tab close / WebView session loss).
-//  - Visibility refresh: silent verify only if cache age > 20 min.
-//  - SWR: if cache is 20-60 min old, show instantly + verify in background.
-//  - backgroundFetchMovies: threshold 2 min → 4 min (fewer films-api calls).
-//  - initApp guard (idempotent).
-//  - clearSession cleans both localStorage and sessionStorage legacy entries.
-//  - Kept: cache-first films/translators/trending/ads, zero-block init, global 401.
+// home.js (v33 — Pro High-End: 1-Hour Session Cache + Zero Network Routing + SWR + No Random Latest)
+// Upgrades vs v32:
+//  - Removed random shuffling for Latest films. They now display in natural backend order.
+//  - Kept all caching, session, SWR, and UI logic 100% intact.
 
 (function() {
     'use strict';
@@ -609,14 +603,9 @@
         return getActiveSource().filter(function(m) { return m.latest === true && matchesCategory(m, currentCategory); });
     }
 
-    function getRandomLatestFilms(limit) {
+    // 🔥 FIX: Removed random shuffle. Just slice the array in its natural order.
+    function getLatestFilmsSlice(limit) {
         var latest = getLatestFilms();
-        for (var i = latest.length - 1; i > 0; i--) {
-            var j = Math.floor(Math.random() * (i + 1));
-            var temp = latest[i];
-            latest[i] = latest[j];
-            latest[j] = temp;
-        }
         return latest.slice(0, limit || 6);
     }
 
@@ -639,7 +628,7 @@
         }
 
         var limit = isLatestExpanded ? latestAll.length : 6;
-        crossfadeReplace(latestGrid, getRandomLatestFilms(limit), 'latest', 6);
+        crossfadeReplace(latestGrid, getLatestFilmsSlice(limit), 'latest', 6);
 
         renderTrending();
 
@@ -1143,7 +1132,7 @@
 
             var latestAll = getLatestFilms();
             var limit = isLatestExpanded ? latestAll.length : 6;
-            crossfadeReplace(latestGrid, getRandomLatestFilms(limit), 'latest', 6);
+            crossfadeReplace(latestGrid, getLatestFilmsSlice(limit), 'latest', 6);
         });
     }
 
